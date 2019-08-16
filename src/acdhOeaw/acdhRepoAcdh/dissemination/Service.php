@@ -40,12 +40,18 @@ use acdhOeaw\acdhRepoLib\exception\RepoLibException;
 class Service extends RepoResource {
 
     const RDF_TYPE = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
-    
+
     /**
      * Parameters list
      * @var array
      */
     private $param;
+
+    /**
+     *
+     * @var bool
+     */
+    private $loadParamFromMeta = false;
 
     /**
      * Returns all return formats provided by the dissemination service.
@@ -82,25 +88,14 @@ class Service extends RepoResource {
     }
 
     /**
-     * Loads information on service parameters from a given RDF graph (obtained
-     * e.g. as a search result).
+     * Tells the service it can load information on service parameters from its metadata.
      * 
-     * @param Graph $graph metadata graph containing parameters description
+     * Information will be loaded in a lazy way (when it's needed).
+     * 
      * @return void
      */
-    public function loadParametersFromGraph(Graph $graph): void {
-        $type        = $this->getRepo()->getSchema()->dissService->parameterClass;
-        $parentProp  = $this->getRepo()->getSchema()->parent;
-        $params      = $graph->resourcesMatching($parentProp, $graph->resource($this->getUri()));
-        $this->param = [];
-        foreach ($params as $i) {
-            /* @var $i \EasyRdf\Resource */
-            if ($i->isA($type)) {
-                $param                          = new Parameter($i->getUri(), $this->getRepo());
-                $param->setMetadata($i);
-                $this->param[$param->getName()] = $param;
-            }
-        }
+    public function loadParametersFromMetadata(): void {
+        $this->loadParamFromMeta = true;
     }
 
     /**
@@ -157,7 +152,7 @@ class Service extends RepoResource {
             } else if (isset($this->param[$name])) {
                 $value = $this->param[$name]->getValue($res, $ii);
             } else {
-                throw new RepoLibException('unknown parameter ' . $name . ' ('.$this->getUri().')');
+                throw new RepoLibException('unknown parameter ' . $name . ' (' . $this->getUri() . ')');
             }
             $values[$i] = $value;
         }
@@ -166,7 +161,24 @@ class Service extends RepoResource {
     }
 
     private function loadParameters(): void {
-        if ($this->param === null) {
+        if (is_array($this->param)) {
+            return;
+        }
+        if ($this->loadParamFromMeta) {
+            $type        = $this->getRepo()->getSchema()->dissService->parameterClass;
+            $parentProp  = $this->getRepo()->getSchema()->parent;
+            $graph       = $this->getGraph()->getGraph();
+            $params      = $graph->resourcesMatching($parentProp, $graph->resource($this->getUri()));
+            $this->param = [];
+            foreach ($params as $i) {
+                /* @var $i \EasyRdf\Resource */
+                if ($i->isA($type)) {
+                    $param                          = new Parameter($i->getUri(), $this->getRepo());
+                    $param->setMetadata($i);
+                    $this->param[$param->getName()] = $param;
+                }
+            }
+        } else {
             $typeProp    = self::RDF_TYPE;
             $type        = $this->getRepo()->getSchema()->dissService->parameterClass;
             $parentProp  = $this->getRepo()->getSchema()->parent;

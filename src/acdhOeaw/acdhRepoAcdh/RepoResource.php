@@ -40,7 +40,7 @@ class RepoResource extends \acdhOeaw\acdhRepoLib\RepoResource {
      * @return array
      */
     public function getDissServices(): array {
-        $query = "
+        $query  = "
             WITH ds AS (
                 SELECT id, target_id AS dsid
                 FROM relations r 
@@ -68,7 +68,7 @@ class RepoResource extends \acdhOeaw\acdhRepoLib\RepoResource {
             SELECT target_id AS id FROM relations WHERE id = ? AND property = ?
         ";
         $schema = $this->getRepo()->getSchema();
-        $param = [
+        $param  = [
             $schema->parent,
             $schema->dissService->class,
             $schema->dissService->matchProperty,
@@ -78,15 +78,30 @@ class RepoResource extends \acdhOeaw\acdhRepoLib\RepoResource {
             (int) substr($this->getUri(), strlen($this->getRepo()->getBaseUrl())),
             $schema->dissService->hasService,
         ];
-        $tmp = $this->getRepo()->getResourcesBySqlQuery($query, $param, self::META_NEIGHBORS);
-        $services = [];
+        $tmp    = $this->getRepo()->getResourcesBySqlQuery($query, $param, self::META_NEIGHBORS, Service::class);
+
+        // gather all services
+        $services = $formats  = $mime     = [];
         foreach ($tmp as $i) {
-            /* @var $i \acdhOeaw\acdhRepoLib\RepoResource */
-            $service = new Service($i->getUri(), $i->getRepo());
-            $service->loadParametersFromGraph($service->getGraph()->getGraph());
-            $services[] = $service;
+            /* @var $i \acdhOeaw\acdhRepoAcdh\dissemination\Service */
+            $i->loadParametersFromMetadata();
+            foreach ($i->getFormats() as $f) {
+                /* @var $f \acdhOeaw\acdhRepoAcdh\dissemination\Format */
+                $services[] = $i;
+                $formats[]  = $f->weight;
+                $mime[]     = $f->format;
+            }
         }
-        return $services;
+
+        // deal with possible conflicts for same mime types
+        arsort($formats);
+        $ret = [];
+        foreach (array_keys($formats) as $k) {
+            if (!isset($ret[$mime[$k]])) {
+                $ret[$mime[$k]] = $services[$k];
+            }
+        }
+        return $ret;
     }
 
 }

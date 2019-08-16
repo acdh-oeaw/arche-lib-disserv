@@ -52,7 +52,7 @@ class Format {
     /**
      * Creates a return format description.
      * @param string $value return type description in format "type" or
-     *   "type; q=weight", where weight is a number between 0 and 1
+     *   "type;q=weight", where weight is a number between 0 and 1
      */
     public function __construct(string $value) {
         $value        = explode(';', $value);
@@ -72,7 +72,7 @@ class Format {
      * @return string
      */
     public function __toString() {
-        return $this->format . '; q=' . $this->weight;
+        return $this->format . ';q=' . $this->weight;
     }
 
 }
