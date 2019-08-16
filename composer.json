@@ -1,0 +1,19 @@
+{
+    "name": "acdh-oeaw/acdh-repo-acdh",
+    "description": "A library for ingesting data into the ACDH digital objects repository",
+    "authors": [
+        {
+            "name": "Mateusz Żółtak",
+            "email": "mzoltak@oeaw.ac.at"
+        }
+    ],
+    "require": {
+        "acdh-oeaw/acdh-repo-lib": "*",
+        "acdh-oeaw/easyrdf": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "acdhOeaw\\": "src/acdhOeaw"
+        }
+    }
+}
