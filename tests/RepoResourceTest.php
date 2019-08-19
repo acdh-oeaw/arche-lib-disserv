@@ -27,9 +27,6 @@
 namespace acdhOeaw\acdhRepoAcdh;
 
 use acdhOeaw\acdhRepoLib\Repo;
-use EasyRdf\Graph;
-use EasyRdf\Resource;
-use GuzzleHttp\Exception\RequestException;
 
 /**
  * Description of RepoResourceTest

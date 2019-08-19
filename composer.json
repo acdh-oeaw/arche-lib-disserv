@@ -1,6 +1,6 @@
 {
     "name": "acdh-oeaw/acdh-repo-acdh",
-    "description": "A library for ingesting data into the ACDH digital objects repository",
+    "description": "A library implementing higher-level ACDH repo concepts",
     "authors": [
         {
             "name": "Mateusz Żółtak",
