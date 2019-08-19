@@ -146,9 +146,9 @@ class Service extends RepoResource {
             $name = array_shift($ii);
 
             if ($name === 'RES_URI') {
-                $value = Parameter::value($res, '', $res->getUri(true), $ii);
+                $value = Parameter::value($res, '', $res->getUri(), $ii);
             } else if ($name === 'RES_ID') {
-                $value = Parameter::value($res, '', $res->getId(), $ii);
+                $value = Parameter::value($res, '', $res->getUri(), $ii);
             } else if (isset($this->param[$name])) {
                 $value = $this->param[$name]->getValue($res, $ii);
             } else {
