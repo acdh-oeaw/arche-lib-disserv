@@ -43,7 +43,7 @@ class RepoResourceTest extends \PHPUnit\Framework\TestCase {
     static private $config;
 
     static public function setUpBeforeClass(): void {
-        $cfgFile      = __DIR__ . '/../../rdbms/config.yaml';
+        $cfgFile      = __DIR__ . '/config.yaml';
         self::$config = json_decode(json_encode(yaml_parse_file($cfgFile)));
         self::$repo   = Repo::factory($cfgFile);
     }
