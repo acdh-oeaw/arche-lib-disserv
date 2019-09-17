@@ -27,7 +27,6 @@
 namespace acdhOeaw\acdhRepoAcdh\dissemination;
 
 use GuzzleHttp\Psr7\Request;
-use EasyRdf\Graph;
 use acdhOeaw\acdhRepoAcdh\RepoResource;
 use acdhOeaw\acdhRepoLib\SearchTerm;
 use acdhOeaw\acdhRepoLib\exception\RepoLibException;

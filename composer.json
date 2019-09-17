@@ -1,6 +1,10 @@
 {
     "name": "acdh-oeaw/acdh-repo-acdh",
+    "type": "library",
     "description": "A library implementing higher-level ACDH repo concepts",
+    "keywords": [],
+    "homepage": "https://github.com/zozlak/acdh-repo-acdh",
+    "license": "MIT",
     "authors": [
         {
             "name": "Mateusz Żółtak",
