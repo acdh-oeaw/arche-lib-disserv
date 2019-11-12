@@ -27,6 +27,7 @@
 namespace acdhOeaw\acdhRepoAcdh;
 
 use acdhOeaw\acdhRepoAcdh\dissemination\Service;
+use acdhOeaw\acdhRepoLib\SearchConfig;
 
 /**
  * Description of RepoResource
@@ -78,7 +79,10 @@ class RepoResource extends \acdhOeaw\acdhRepoLib\RepoResource {
             (int) substr($this->getUri(), strlen($this->getRepo()->getBaseUrl())),
             $schema->dissService->hasService,
         ];
-        $tmp    = $this->getRepo()->getResourcesBySqlQuery($query, $param, self::META_NEIGHBORS, Service::class);
+        $config = new SearchConfig();
+        $config->metadataMode = self::META_NEIGHBORS;
+        $config->class = Service::class;
+        $tmp    = $this->getRepo()->getResourcesBySqlQuery($query, $param, $config);
 
         // gather all services
         $services = $formats  = $mime     = [];
