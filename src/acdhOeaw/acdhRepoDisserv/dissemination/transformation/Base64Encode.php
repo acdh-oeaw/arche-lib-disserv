@@ -24,22 +24,29 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\acdhRepoAcdh\dissemination\transformation;
+namespace acdhOeaw\acdhRepoDisserv\dissemination\transformation;
 
 /**
- * An interface for dissemination services parameters transformation
+ * Base64 encodes given value
+ *
  * @author zozlak
  */
-interface iTransformation {
-
+class Base64Encode implements iTransformation {
+    
     /**
      * Returns transformation name
      */
-    public function getName(): string;
+    public function getName(): string {
+        return 'base64';
+    }
 
     /**
-     * Transforms a parameter.
-     * @param string $value parameter value to be transformed
+     * Returns base64 encoded value
+     * @param string $value value to be transformed
+     * @return string
      */
-    public function transform(string $value): string;
+    public function transform(string $value): string {
+        return base64_encode($value);
+    }
+
 }

@@ -24,29 +24,38 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\acdhRepoAcdh\dissemination\transformation;
+namespace acdhOeaw\acdhRepoDisserv\dissemination\transformation;
 
 /**
- * Base64 encodes given value
- *
+ * URL encodes given value
+ * 
  * @author zozlak
  */
-class Base64Encode implements iTransformation {
-    
+class RemoveProtocol implements iTransformation {
+
     /**
      * Returns transformation name
      */
     public function getName(): string {
-        return 'base64';
+        return 'removeprotocol';
     }
 
     /**
-     * Returns base64 encoded value
+     * Returns raw URL decoded value from the acdh identifier.
      * @param string $value value to be transformed
      * @return string
      */
     public function transform(string $value): string {
-        return base64_encode($value);
+        
+        if (strpos($value, 'hdl.handle.net') !== false) {
+            $value = str_replace("http://", "", $value);
+        }else if(strpos($value, 'https') !== false) {
+            $value = str_replace("https://", "", $value);
+        }else {
+            $value = str_replace("http://", "", $value);
+        }
+        return $value;
+        
     }
 
 }

@@ -24,11 +24,11 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\acdhRepoAcdh\dissemination;
+namespace acdhOeaw\acdhRepoDisserv\dissemination;
 
 use acdhOeaw\acdhRepoLib\exception\RepoLibException;
-use acdhOeaw\acdhRepoAcdh\RepoResource;
-use acdhOeaw\acdhRepoAcdh\dissemination\transformation\iTransformation;
+use acdhOeaw\acdhRepoDisserv\RepoResource;
+use acdhOeaw\acdhRepoDisserv\dissemination\transformation\iTransformation;
 
 /**
  * Represents a dissemination service parameter.
@@ -42,14 +42,14 @@ class Parameter extends RepoResource {
      * @var array
      */
     static private $transformations = [
-        'add'            => 'acdhOeaw\\acdhRepoAcdh\\dissemination\\transformation\\AddParam',
-        'base64'         => 'acdhOeaw\\acdhRepoAcdh\\dissemination\\transformation\\Base64Encode',
-        'part'           => 'acdhOeaw\\acdhRepoAcdh\\dissemination\\transformation\\UriPart',
-        'set'            => 'acdhOeaw\\acdhRepoAcdh\\dissemination\\transformation\\SetParam',
-        'substr'         => 'acdhOeaw\\acdhRepoAcdh\\dissemination\\transformation\\Substr',
-        'url'            => 'acdhOeaw\\acdhRepoAcdh\\dissemination\\transformation\\UrlEncode',
-        'rawurlencode'   => 'acdhOeaw\\acdhRepoAcdh\\dissemination\\transformation\\RawUrlEncode',
-        'removeprotocol' => 'acdhOeaw\\acdhRepoAcdh\\dissemination\\transformation\\RemoveProtocol',
+        'add'            => 'acdhOeaw\\acdhRepoDisserv\\dissemination\\transformation\\AddParam',
+        'base64'         => 'acdhOeaw\\acdhRepoDisserv\\dissemination\\transformation\\Base64Encode',
+        'part'           => 'acdhOeaw\\acdhRepoDisserv\\dissemination\\transformation\\UriPart',
+        'set'            => 'acdhOeaw\\acdhRepoDisserv\\dissemination\\transformation\\SetParam',
+        'substr'         => 'acdhOeaw\\acdhRepoDisserv\\dissemination\\transformation\\Substr',
+        'url'            => 'acdhOeaw\\acdhRepoDisserv\\dissemination\\transformation\\UrlEncode',
+        'rawurlencode'   => 'acdhOeaw\\acdhRepoDisserv\\dissemination\\transformation\\RawUrlEncode',
+        'removeprotocol' => 'acdhOeaw\\acdhRepoDisserv\\dissemination\\transformation\\RemoveProtocol',
     ];
 
     /**

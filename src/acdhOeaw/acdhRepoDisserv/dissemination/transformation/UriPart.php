@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\acdhRepoAcdh\dissemination\transformation;
+namespace acdhOeaw\acdhRepoDisserv\dissemination\transformation;
 
 /**
  * Assuming value is an URL extracts given parts of the URL.

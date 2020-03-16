@@ -1,9 +1,9 @@
 {
-    "name": "acdh-oeaw/acdh-repo-acdh",
+    "name": "acdh-oeaw/arche-lib-disserv",
     "type": "library",
-    "description": "A library implementing higher-level ACDH repo concepts",
+    "description": "A library providing dissemination services support on top of the acdh-oeaw/arche-lib",
     "keywords": [],
-    "homepage": "https://github.com/zozlak/acdh-repo-acdh",
+    "homepage": "https://github.com/acdh-oeaw/arche-lib-disserv",
     "license": "MIT",
     "authors": [
         {
@@ -12,7 +12,7 @@
         }
     ],
     "require": {
-        "acdh-oeaw/acdh-repo-lib": "*",
+        "acdh-oeaw/arche-lib": "^1",
         "acdh-oeaw/easyrdf": "*"
     },
     "autoload": {

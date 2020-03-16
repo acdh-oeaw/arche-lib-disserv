@@ -24,38 +24,55 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\acdhRepoAcdh\dissemination\transformation;
+namespace acdhOeaw\acdhRepoDisserv\dissemination;
+
+use RuntimeException;
 
 /**
- * URL encodes given value
- * 
+ * Container describing dissemination service return format.
+ * Format consists of a format name (in most cases MIME type but there can be
+ * exceptions) and weight (as weights used in the HTTP Accept header).
+ *
  * @author zozlak
  */
-class RemoveProtocol implements iTransformation {
+class Format {
 
     /**
-     * Returns transformation name
+     * Return format name (typically a MIME type)
+     * @var string
      */
-    public function getName(): string {
-        return 'removeprotocol';
+    public $format;
+
+    /**
+     * Return format weight
+     * @var float
+     */
+    public $weight = 1;
+
+    /**
+     * Creates a return format description.
+     * @param string $value return type description in format "type" or
+     *   "type;q=weight", where weight is a number between 0 and 1
+     */
+    public function __construct(string $value) {
+        $value        = explode(';', $value);
+        $this->format = trim($value[0]);
+        if (count($value) > 1) {
+            $matches = [];
+            preg_match('/^ *q=(0[.][0-9]+) *$/', $value[1], $matches);
+            if (!isset($matches[1])) {
+                throw new RuntimeException('Bad weight specification');
+            }
+            $this->weight = (float) $matches[1];
+        }
     }
 
     /**
-     * Returns raw URL decoded value from the acdh identifier.
-     * @param string $value value to be transformed
+     * Provides pretty-print serializaton
      * @return string
      */
-    public function transform(string $value): string {
-        
-        if (strpos($value, 'hdl.handle.net') !== false) {
-            $value = str_replace("http://", "", $value);
-        }else if(strpos($value, 'https') !== false) {
-            $value = str_replace("https://", "", $value);
-        }else {
-            $value = str_replace("http://", "", $value);
-        }
-        return $value;
-        
+    public function __toString() {
+        return $this->format . ';q=' . $this->weight;
     }
 
 }

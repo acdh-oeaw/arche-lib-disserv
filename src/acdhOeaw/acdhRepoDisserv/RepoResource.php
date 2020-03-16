@@ -24,9 +24,9 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\acdhRepoAcdh;
+namespace acdhOeaw\acdhRepoDisserv;
 
-use acdhOeaw\acdhRepoAcdh\dissemination\Service;
+use acdhOeaw\acdhRepoDisserv\dissemination\Service;
 use acdhOeaw\acdhRepoLib\SearchConfig;
 
 /**
@@ -87,10 +87,10 @@ class RepoResource extends \acdhOeaw\acdhRepoLib\RepoResource {
         // gather all services
         $services = $formats  = $mime     = [];
         foreach ($tmp as $i) {
-            /* @var $i \acdhOeaw\acdhRepoAcdh\dissemination\Service */
+            /* @var $i \acdhOeaw\acdhRepoDisserv\dissemination\Service */
             $i->loadParametersFromMetadata();
             foreach ($i->getFormats() as $f) {
-                /* @var $f \acdhOeaw\acdhRepoAcdh\dissemination\Format */
+                /* @var $f \acdhOeaw\acdhRepoDisserv\dissemination\Format */
                 $services[] = $i;
                 $formats[]  = $f->weight;
                 $mime[]     = $f->format;

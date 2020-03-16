@@ -24,10 +24,10 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\acdhRepoAcdh\dissemination;
+namespace acdhOeaw\acdhRepoDisserv\dissemination;
 
 use GuzzleHttp\Psr7\Request;
-use acdhOeaw\acdhRepoAcdh\RepoResource;
+use acdhOeaw\acdhRepoDisserv\RepoResource;
 use acdhOeaw\acdhRepoLib\SearchTerm;
 use acdhOeaw\acdhRepoLib\exception\RepoLibException;
 

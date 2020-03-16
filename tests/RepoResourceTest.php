@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\acdhRepoAcdh;
+namespace acdhOeaw\acdhRepoDisserv;
 
 use acdhOeaw\acdhRepoLib\Repo;
 
@@ -58,7 +58,7 @@ class RepoResourceTest extends \PHPUnit\Framework\TestCase {
         $ds = $res->getDissServices();
         $this->assertTrue(is_array($ds));
         foreach ($ds as $i){
-            /* @var $i \acdhOeaw\acdhRepoAcdh\dissemination\Service */
+            /* @var $i \acdhOeaw\acdhRepoDisserv\dissemination\Service */
             echo "\n---------------------------------------\n";
             echo $i->getRequest($res)->getUri() . "\n";
             break;

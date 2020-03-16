@@ -24,30 +24,31 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\acdhRepoAcdh\dissemination\transformation;
+namespace acdhOeaw\acdhRepoDisserv\dissemination\transformation;
 
 /**
- * URL encodes given value
- * 
+ * Returns value's substring
+ *
  * @author zozlak
  */
-class RawUrlEncode implements iTransformation {
+class Substr implements iTransformation {
 
     /**
      * Returns transformation name
      */
     public function getName(): string {
-        return 'rawurlencode';
+        return 'substr';
     }
 
     /**
-     * Returns raw URL decoded value from the acdh identifier.
+     * Returns substring  of a given value by simply calling substr().
      * @param string $value value to be transformed
+     * @param int $start index of the first character to be returned
+     * @param int $length returned value length
      * @return string
      */
-    public function transform(string $value): string {
-        $value = rawurlencode($value);
-        return $value;
+    public function transform(string $value, int $start = 0, int $length = null): string {
+        return $length === null ? substr($value, $start) : substr($value, $start, $length);
     }
 
 }

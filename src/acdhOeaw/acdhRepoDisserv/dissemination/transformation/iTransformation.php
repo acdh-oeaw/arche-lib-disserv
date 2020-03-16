@@ -24,31 +24,22 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\acdhRepoAcdh\dissemination\transformation;
+namespace acdhOeaw\acdhRepoDisserv\dissemination\transformation;
 
 /**
- * Returns value's substring
- *
+ * An interface for dissemination services parameters transformation
  * @author zozlak
  */
-class Substr implements iTransformation {
+interface iTransformation {
 
     /**
      * Returns transformation name
      */
-    public function getName(): string {
-        return 'substr';
-    }
+    public function getName(): string;
 
     /**
-     * Returns substring  of a given value by simply calling substr().
-     * @param string $value value to be transformed
-     * @param int $start index of the first character to be returned
-     * @param int $length returned value length
-     * @return string
+     * Transforms a parameter.
+     * @param string $value parameter value to be transformed
      */
-    public function transform(string $value, int $start = 0, int $length = null): string {
-        return $length === null ? substr($value, $start) : substr($value, $start, $length);
-    }
-
+    public function transform(string $value): string;
 }
