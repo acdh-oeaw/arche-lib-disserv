@@ -28,7 +28,9 @@ namespace acdhOeaw\acdhRepoDisserv\dissemination;
 
 use GuzzleHttp\Psr7\Request;
 use acdhOeaw\acdhRepoDisserv\RepoResource;
+use acdhOeaw\acdhRepoLib\RepoResourceInterface;
 use acdhOeaw\acdhRepoLib\SearchTerm;
+use acdhOeaw\acdhRepoLib\SearchConfig;
 use acdhOeaw\acdhRepoLib\exception\RepoLibException;
 
 /**
@@ -147,7 +149,7 @@ class Service extends RepoResource {
             if ($name === 'RES_URI') {
                 $value = Parameter::value($res, '', $res->getUri(), $ii);
             } else if ($name === 'RES_ID') {
-                $value = Parameter::value($res, '', $res->getUri(), $ii);
+                $value = Parameter::value($res, '', $res->getId(), $ii);
             } else if (isset($this->param[$name])) {
                 $value = $this->param[$name]->getValue($res, $ii);
             } else {
@@ -178,18 +180,20 @@ class Service extends RepoResource {
                 }
             }
         } else {
-            $typeProp    = self::RDF_TYPE;
-            $type        = $this->getRepo()->getSchema()->dissService->parameterClass;
-            $parentProp  = $this->getRepo()->getSchema()->parent;
-            $params      = $this->getRepo()->getResourcesBySearchTerms([
+            $typeProp          = self::RDF_TYPE;
+            $type              = $this->getRepo()->getSchema()->dissService->parameterClass;
+            $parentProp        = $this->getRepo()->getSchema()->parent;
+            $terms             = [
                 new SearchTerm($typeProp, $type),
                 new SearchTerm($parentProp, $this->getUri()),
-            ]);
-            $this->param = [];
+            ];
+            $cfg               = new SearchConfig();
+            $cfg->metadataMode = RepoResourceInterface::META_RESOURCE;
+            $cfg->class        = '\acdhOeaw\acdhRepoDisserv\dissemination\Parameter';
+            $params            = $this->getRepo()->getResourcesBySearchTerms($terms, $cfg);
+            $this->param       = [];
             foreach ($params as $i) {
-                $param                          = new Parameter($i->getUri(), $this->getRepo());
-                $param->setGraph($i->getMetadata());
-                $this->param[$param->getName()] = $param;
+                $this->param[$i->getName()] = $i;
             }
         }
     }

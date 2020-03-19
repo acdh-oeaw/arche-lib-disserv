@@ -28,6 +28,7 @@ namespace acdhOeaw\acdhRepoDisserv;
 
 use acdhOeaw\acdhRepoDisserv\dissemination\Service;
 use acdhOeaw\acdhRepoLib\SearchConfig;
+use zozlak\RdfConstants as RDF;
 
 /**
  * Description of RepoResource
@@ -41,48 +42,49 @@ class RepoResource extends \acdhOeaw\acdhRepoLib\RepoResource {
      * @return array
      */
     public function getDissServices(): array {
-        $query  = "
-            WITH ds AS (
-                SELECT id, target_id AS dsid
-                FROM relations r 
-                WHERE
-                    property = ?
-                    AND EXISTS (SELECT 1 FROM metadata WHERE r.target_id = id AND substring(value, 1, 1000) = ?)
-            )
-            SELECT dsid AS id 
+        $query                          = "
+            SELECT dsid AS id
             FROM (
-                SELECT dsid, required, count(*) AS count, sum(passed::int) AS sum 
-                from (
-                    SELECT dsid, dspid, required, bool_or(id is not null) AS passed
-                    FROM
-                             (SELECT dsid, id AS dspid, value AS property FROM metadata m JOIN ds USING (id) WHERE property = ?) t1
-                        JOIN (SELECT dsid, id AS dspid, value             FROM metadata m JOIN ds USING (id) WHERE property = ?) t2 USING (dsid, dspid)
-                        JOIN (SELECT dsid, id AS dspid, value AS required FROM metadata m JOIN ds USING (id) WHERE property = ?) t3 USING (dsid, dspid)
-                        LEFT  JOIN (SELECT id, property, value FROM metadata WHERE id = ?) t4 USING (property, value)
-                    GROUP BY 1, 2, 3
-                ) t5
+                SELECT dsid, required, count(*) AS count, sum(passed::int) AS passed
+                FROM (
+                    SELECT dsid, dspid, required::bool, id IS NOT NULL OR dspid IS NULL AS passed
+                    FROM 
+                        (
+                            SELECT d1.id AS dsid, r.id AS dspid, m1.value AS required, m2.value AS property, m3.value AS value
+                            FROM
+                                (SELECT id FROM metadata WHERE property = ? AND substring(value, 1, 1000) = ?) d1
+                                LEFT JOIN relations r ON d1.id = r.target_id AND r.property = ?
+                                LEFT JOIN metadata m1 ON r.id = m1.id AND m1.property = ?
+                                LEFT JOIN metadata m2 ON r.id = m2.id AND m2.property = ?
+                                LEFT JOIN metadata m3 ON r.id = m3.id AND m3.property = ?
+                        ) d2
+                        LEFT JOIN (SELECT id, property, value FROM metadata WHERE id = ?) m4 USING (property, value)
+                    WHERE required IS NOT NULL OR dspid IS NULL
+                ) d3
                 GROUP BY 1, 2
-            ) t6 
-            GROUP BY 1 
-            HAVING count(*) = sum((CASE required WHEN 'true' THEN count = sum ELSE sum > 0 END)::int)
+            ) d4
+            GROUP BY 1
+            HAVING count(*) = sum((CASE required WHEN true THEN count = passed ELSE passed > 0 END)::int)
           UNION
             SELECT target_id AS id FROM relations WHERE id = ? AND property = ?
         ";
-        $schema = $this->getRepo()->getSchema();
-        $param  = [
-            $schema->parent,
+        $schema                         = $this->getRepo()->getSchema();
+        $param                          = [
+            RDF::RDF_TYPE,
             $schema->dissService->class,
+            $schema->parent,
+            $schema->dissService->matchRequired,
             $schema->dissService->matchProperty,
             $schema->dissService->matchValue,
-            $schema->dissService->matchRequired,
             (int) substr($this->getUri(), strlen($this->getRepo()->getBaseUrl())),
             (int) substr($this->getUri(), strlen($this->getRepo()->getBaseUrl())),
             $schema->dissService->hasService,
         ];
-        $config = new SearchConfig();
-        $config->metadataMode = self::META_NEIGHBORS;
-        $config->class = Service::class;
-        $tmp    = $this->getRepo()->getResourcesBySqlQuery($query, $param, $config);
+        $config                         = new SearchConfig();
+        $config->metadataMode           = self::META_NEIGHBORS;
+        $config->metadataParentProperty = $schema->parent;
+        $config->class                  = Service::class;
+        $tmp                            = $this->getRepo()->getResourcesBySqlQuery($query, $param, $config);
 
         // gather all services
         $services = $formats  = $mime     = [];

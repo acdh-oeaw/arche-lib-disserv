@@ -13,7 +13,8 @@
     ],
     "require": {
         "acdh-oeaw/arche-lib": "^1",
-        "acdh-oeaw/easyrdf": "*"
+        "acdh-oeaw/easyrdf": "*",
+        "zozlak/rdf-constants": "*"
     },
     "autoload": {
         "psr-4": {
