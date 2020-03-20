@@ -47,7 +47,7 @@ class RepoResource extends \acdhOeaw\acdhRepoLib\RepoResource {
             FROM (
                 SELECT dsid, required, count(*) AS count, sum(passed::int) AS passed
                 FROM (
-                    SELECT dsid, dspid, required::bool, id IS NOT NULL OR dspid IS NULL AS passed
+                    SELECT dsid, dspid, coalesce(required::bool, true) AS required, id IS NOT NULL OR required IS NULL AS passed
                     FROM 
                         (
                             SELECT d1.id AS dsid, r.id AS dspid, m1.value AS required, m2.value AS property, m3.value AS value
@@ -59,7 +59,6 @@ class RepoResource extends \acdhOeaw\acdhRepoLib\RepoResource {
                                 LEFT JOIN metadata m3 ON r.id = m3.id AND m3.property = ?
                         ) d2
                         LEFT JOIN (SELECT id, property, value FROM metadata WHERE id = ?) m4 USING (property, value)
-                    WHERE required IS NOT NULL OR dspid IS NULL
                 ) d3
                 GROUP BY 1, 2
             ) d4
