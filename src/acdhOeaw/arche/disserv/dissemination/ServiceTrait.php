@@ -146,8 +146,6 @@ trait ServiceTrait {
 
             if ($name === 'RES_URI') {
                 $value = Parameter::value($res, '', $res->getUri(), $ii);
-            } else if ($name === 'RES_ID') {
-                $value = Parameter::value($res, '', $res->getId(), $ii);
             } else if (preg_match('/^[a-zA-Z0-9]+_ID$/', $name)) {
                 $id    = $this->getResNmspId($res, substr($name, 0, -3));
                 $value = Parameter::value($res, '', $id, $ii);
