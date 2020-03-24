@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2019 Austrian Centre for Digital Humanities.
+ * Copyright 2020 Austrian Centre for Digital Humanities.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,30 +24,16 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\acdhRepoDisserv\dissemination\transformation;
+namespace acdhOeaw\arche\disserv\dissemination;
+
+use acdhOeaw\arche\disserv\RepoResourceDb;
 
 /**
- * URL encodes given value
- * 
+ * Description of ParameterDb
+ *
  * @author zozlak
  */
-class RawUrlEncode implements iTransformation {
+class ParameterDb extends RepoResourceDb implements ParameterInterface {
 
-    /**
-     * Returns transformation name
-     */
-    public function getName(): string {
-        return 'rawurlencode';
-    }
-
-    /**
-     * Returns raw URL decoded value from the acdh identifier.
-     * @param string $value value to be transformed
-     * @return string
-     */
-    public function transform(string $value): string {
-        $value = rawurlencode($value);
-        return $value;
-    }
-
+    use ParameterTrait;
 }

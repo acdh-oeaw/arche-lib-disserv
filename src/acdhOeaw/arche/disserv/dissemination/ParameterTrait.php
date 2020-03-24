@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2019 Austrian Centre for Digital Humanities.
+ * Copyright 2020 Austrian Centre for Digital Humanities.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,32 +24,32 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\acdhRepoDisserv\dissemination;
+namespace acdhOeaw\arche\disserv\dissemination;
 
 use acdhOeaw\acdhRepoLib\exception\RepoLibException;
-use acdhOeaw\acdhRepoDisserv\RepoResource;
-use acdhOeaw\acdhRepoDisserv\dissemination\transformation\iTransformation;
+use acdhOeaw\arche\disserv\RepoResourceInterface;
+use acdhOeaw\arche\disserv\dissemination\transformation\iTransformation;
 
 /**
- * Represents a dissemination service parameter.
+ * Description of ParameterTrait
  *
  * @author zozlak
  */
-class Parameter extends RepoResource {
+trait ParameterTrait {
 
     /**
      * Stores list of registered transformations
      * @var array
      */
     static private $transformations = [
-        'add'            => 'acdhOeaw\\acdhRepoDisserv\\dissemination\\transformation\\AddParam',
-        'base64'         => 'acdhOeaw\\acdhRepoDisserv\\dissemination\\transformation\\Base64Encode',
-        'part'           => 'acdhOeaw\\acdhRepoDisserv\\dissemination\\transformation\\UriPart',
-        'set'            => 'acdhOeaw\\acdhRepoDisserv\\dissemination\\transformation\\SetParam',
-        'substr'         => 'acdhOeaw\\acdhRepoDisserv\\dissemination\\transformation\\Substr',
-        'url'            => 'acdhOeaw\\acdhRepoDisserv\\dissemination\\transformation\\UrlEncode',
-        'rawurlencode'   => 'acdhOeaw\\acdhRepoDisserv\\dissemination\\transformation\\RawUrlEncode',
-        'removeprotocol' => 'acdhOeaw\\acdhRepoDisserv\\dissemination\\transformation\\RemoveProtocol',
+        'add'            => 'acdhOeaw\arche\disserv\dissemination\transformation\AddParam',
+        'base64'         => 'acdhOeaw\arche\disserv\dissemination\transformation\Base64Encode',
+        'part'           => 'acdhOeaw\arche\disserv\dissemination\transformation\UriPart',
+        'set'            => 'acdhOeaw\arche\disserv\dissemination\transformation\SetParam',
+        'substr'         => 'acdhOeaw\arche\disserv\dissemination\transformation\Substr',
+        'url'            => 'acdhOeaw\arche\disserv\dissemination\transformation\UrlEncode',
+        'rawurlencode'   => 'acdhOeaw\arche\disserv\dissemination\transformation\RawUrlEncode',
+        'removeprotocol' => 'acdhOeaw\arche\disserv\dissemination\transformation\RemoveProtocol',
     ];
 
     /**
@@ -62,14 +62,14 @@ class Parameter extends RepoResource {
 
     /**
      * Returns parameter value for a given resource.
-     * @param FedoraResource $res repository resource to return the value for
+     * @param RepoResourceInterface $res repository resource to return the value for
      * @param string $valueProp RDF property holding the parameter value. If
      *   empty, the $default value is used.
      * @param string $default parameter default value
      * @param string $transformations transformations to be applied to the parameter value
      * @return string
      */
-    static public function value(RepoResource $res, string $valueProp,
+    static public function value(RepoResourceInterface $res, string $valueProp,
                                  string $default, array $transformations): string {
         $value = $default;
 
@@ -114,12 +114,12 @@ class Parameter extends RepoResource {
 
     /**
      * Return parameter value for a given repository resource
-     * @param FedoraResource $res repository resource to get the value for
+     * @param RepoResourceInterface $res repository resource to get the value for
      * @param string $transformations transformations to be applied to the value
      * @return string
      * @see transform()
      */
-    public function getValue(RepoResource $res, array $transformations = []): string {
+    public function getValue(RepoResourceInterface $res, array $transformations = []): string {
         $overwrite = filter_input(INPUT_GET, $this->getName());
         if ($overwrite !== null) {
             $valueProp = '';

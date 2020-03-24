@@ -24,38 +24,16 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\acdhRepoDisserv\dissemination\transformation;
+namespace acdhOeaw\arche\disserv\dissemination;
+
+use acdhOeaw\arche\disserv\RepoResource;
 
 /**
- * URL encodes given value
- * 
+ * Represents a dissemination service parameter.
+ *
  * @author zozlak
  */
-class RemoveProtocol implements iTransformation {
+class Parameter extends RepoResource {
 
-    /**
-     * Returns transformation name
-     */
-    public function getName(): string {
-        return 'removeprotocol';
-    }
-
-    /**
-     * Returns raw URL decoded value from the acdh identifier.
-     * @param string $value value to be transformed
-     * @return string
-     */
-    public function transform(string $value): string {
-        
-        if (strpos($value, 'hdl.handle.net') !== false) {
-            $value = str_replace("http://", "", $value);
-        }else if(strpos($value, 'https') !== false) {
-            $value = str_replace("https://", "", $value);
-        }else {
-            $value = str_replace("http://", "", $value);
-        }
-        return $value;
-        
-    }
-
+    use ParameterTrait;
 }

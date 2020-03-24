@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2019 Austrian Centre for Digital Humanities.
+ * Copyright 2020 Austrian Centre for Digital Humanities.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,29 +24,28 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\acdhRepoDisserv\dissemination\transformation;
+namespace acdhOeaw\arche\disserv\dissemination;
+
+use acdhOeaw\arche\disserv\RepoResourceInterface;
 
 /**
- * Base64 encodes given value
  *
  * @author zozlak
  */
-class Base64Encode implements iTransformation {
-    
-    /**
-     * Returns transformation name
-     */
-    public function getName(): string {
-        return 'base64';
-    }
+interface ParameterInterface extends \acdhOeaw\arche\disserv\RepoResourceInterface {
 
     /**
-     * Returns base64 encoded value
-     * @param string $value value to be transformed
+     * Returns parameter name
      * @return string
      */
-    public function transform(string $value): string {
-        return base64_encode($value);
-    }
+    public function getName(): string;
 
+    /**
+     * Return parameter value for a given repository resource
+     * @param FedoraResource $res repository resource to get the value for
+     * @param string $transformations transformations to be applied to the value
+     * @return string
+     * @see transform()
+     */
+    public function getValue(RepoResourceInterface $res, array $transformations = []): string;
 }

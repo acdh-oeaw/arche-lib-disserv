@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2019 Austrian Centre for Digital Humanities.
+ * Copyright 2020 Austrian Centre for Digital Humanities.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,18 +24,18 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\acdhRepoDisserv;
+namespace acdhOeaw\arche\disserv;
 
-use acdhOeaw\acdhRepoDisserv\dissemination\Service;
+use acdhOeaw\arche\disserv\dissemination\Service;
 use acdhOeaw\acdhRepoLib\SearchConfig;
 use zozlak\RdfConstants as RDF;
 
 /**
- * Description of RepoResource
+ * Description of RepoResourceTrait
  *
  * @author zozlak
  */
-class RepoResource extends \acdhOeaw\acdhRepoLib\RepoResource {
+trait RepoResourceTrait {
 
     /**
      * Returns list of dissemination services available for a resource.
@@ -88,10 +88,10 @@ class RepoResource extends \acdhOeaw\acdhRepoLib\RepoResource {
         // gather all services
         $services = $formats  = $mime     = [];
         foreach ($tmp as $i) {
-            /* @var $i \acdhOeaw\acdhRepoDisserv\dissemination\Service */
+            /* @var $i \acdhOeaw\arche\disserv\dissemination\Service */
             $i->loadParametersFromMetadata();
             foreach ($i->getFormats() as $f) {
-                /* @var $f \acdhOeaw\acdhRepoDisserv\dissemination\Format */
+                /* @var $f \acdhOeaw\arche\disserv\dissemination\Format */
                 $services[] = $i;
                 $formats[]  = $f->weight;
                 $mime[]     = $f->format;

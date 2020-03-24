@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2019 Austrian Centre for Digital Humanities.
+ * Copyright 2020 Austrian Centre for Digital Humanities.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,23 +24,21 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\acdhRepoDisserv\dissemination;
+namespace acdhOeaw\arche\disserv\dissemination;
 
 use GuzzleHttp\Psr7\Request;
-use acdhOeaw\acdhRepoDisserv\RepoResource;
-use acdhOeaw\acdhRepoLib\RepoResourceInterface;
+use acdhOeaw\arche\disserv\RepoResourceInterface;
 use acdhOeaw\acdhRepoLib\SearchTerm;
 use acdhOeaw\acdhRepoLib\SearchConfig;
 use acdhOeaw\acdhRepoLib\exception\RepoLibException;
+use zozlak\RdfConstants as RDF;
 
 /**
- * Represents a dissemination service.
+ * Description of ServiceTrait
  *
  * @author zozlak
  */
-class Service extends RepoResource {
-
-    const RDF_TYPE = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
+trait ServiceTrait {
 
     /**
      * Parameters list
@@ -72,11 +70,11 @@ class Service extends RepoResource {
 
     /**
      * Returns PSR-7 HTTP request disseminating a given resource.
-     * @param FedoraResource $res repository resource to be disseminated
+     * @param RepoResourceInterface $res repository resource to be disseminated
      * @return Request
      * @throws RuntimeException
      */
-    public function getRequest(RepoResource $res): Request {
+    public function getRequest(RepoResourceInterface $res): Request {
         $uri = $this->getLocation();
 
         $param  = $this->getUrlParameters();
@@ -134,11 +132,11 @@ class Service extends RepoResource {
     /**
      * Evaluates parameter values for a given resource.
      * @param array $param list of parameters
-     * @param FedoraResource $res repository resource to be disseminated
+     * @param RepoResourceInterface $res repository resource to be disseminated
      * @return array associative array with parameter values
      * @throws RuntimeException
      */
-    private function getParameterValues(array $param, RepoResource $res): array {
+    private function getParameterValues(array $param, RepoResourceInterface $res): array {
         $this->loadParameters();
 
         $values = [];
@@ -150,6 +148,9 @@ class Service extends RepoResource {
                 $value = Parameter::value($res, '', $res->getUri(), $ii);
             } else if ($name === 'RES_ID') {
                 $value = Parameter::value($res, '', $res->getId(), $ii);
+            } else if (preg_match('/^[a-zA-Z0-9]+_ID$/', $name)) {
+                $id    = $this->getResNmspId($res, substr($name, 0, -3));
+                $value = Parameter::value($res, '', $id, $ii);
             } else if (isset($this->param[$name])) {
                 $value = $this->param[$name]->getValue($res, $ii);
             } else {
@@ -180,7 +181,7 @@ class Service extends RepoResource {
                 }
             }
         } else {
-            $typeProp          = self::RDF_TYPE;
+            $typeProp          = RDF::RDF_TYPE;
             $type              = $this->getRepo()->getSchema()->dissService->parameterClass;
             $parentProp        = $this->getRepo()->getSchema()->parent;
             $terms             = [
@@ -189,13 +190,34 @@ class Service extends RepoResource {
             ];
             $cfg               = new SearchConfig();
             $cfg->metadataMode = RepoResourceInterface::META_RESOURCE;
-            $cfg->class        = '\acdhOeaw\acdhRepoDisserv\dissemination\Parameter';
+            $cfg->class        = '\acdhOeaw\arche\disserv\dissemination\Parameter';
             $params            = $this->getRepo()->getResourcesBySearchTerms($terms, $cfg);
             $this->param       = [];
             foreach ($params as $i) {
                 $this->param[$i->getName()] = $i;
             }
         }
+    }
+
+    /**
+     * Fetches a resource id in a given namespace
+     * @param RepoResourceInterface $res
+     * @return string
+     * @throws RepoLibException
+     */
+    private function getResNmspId(RepoResourceInterface $res, string $namespace): string {
+        if (!isset($res->getRepo()->getSchema()->namespaces->$namespace)) {
+            throw new RepoLibException("namespace '$namespace' is not defined in the config");
+        }
+        $nmsp = $res->getRepo()->getSchema()->namespaces->$namespace;
+        $n    = strlen($nmsp);
+        $ids  = $res->getIds();
+        foreach ($ids as $i) {
+            if (substr($i, 0, $n) === $nmsp) {
+                return $i;
+            }
+        }
+        throw new RepoLibException('no ID in namespace ' . $namespace);
     }
 
 }
