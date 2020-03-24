@@ -199,17 +199,25 @@ trait ServiceTrait {
 
     /**
      * Fetches a resource id in a given namespace
+     * 
+     * The `RES` namespace is assumed to be the repository base URL.
+     * 
      * @param RepoResourceInterface $res
+     * @param string $namespace
      * @return string
      * @throws RepoLibException
      */
     private function getResNmspId(RepoResourceInterface $res, string $namespace): string {
-        if (!isset($res->getRepo()->getSchema()->namespaces->$namespace)) {
-            throw new RepoLibException("namespace '$namespace' is not defined in the config");
+        if ($namespace === 'RES') {
+            $nmsp = $res->getRepo()->getBaseUrl();
+        } else {
+            if (!isset($res->getRepo()->getSchema()->namespaces->$namespace)) {
+                throw new RepoLibException("namespace '$namespace' is not defined in the config");
+            }
+            $nmsp = $res->getRepo()->getSchema()->namespaces->$namespace;
         }
-        $nmsp = $res->getRepo()->getSchema()->namespaces->$namespace;
-        $n    = strlen($nmsp);
-        $ids  = $res->getIds();
+        $n   = strlen($nmsp);
+        $ids = $res->getIds();
         foreach ($ids as $i) {
             if (substr($i, 0, $n) === $nmsp) {
                 return $i;
