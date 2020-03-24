@@ -146,6 +146,9 @@ trait ServiceTrait {
 
             if ($name === 'RES_URI') {
                 $value = Parameter::value($res, '', $res->getUri(), $ii);
+            } else if ($name === 'RES_ID') {
+                $id    = substr($res->getUri(), strlen($res->getRepo()->getBaseUrl()));
+                $value = Parameter::value($res, '', $id, $ii);
             } else if (preg_match('/^[a-zA-Z0-9]+_ID$/', $name)) {
                 $id    = $this->getResNmspId($res, substr($name, 0, -3));
                 $value = Parameter::value($res, '', $id, $ii);
@@ -200,24 +203,18 @@ trait ServiceTrait {
     /**
      * Fetches a resource id in a given namespace
      * 
-     * The `RES` namespace is assumed to be the repository base URL.
-     * 
      * @param RepoResourceInterface $res
      * @param string $namespace
      * @return string
      * @throws RepoLibException
      */
     private function getResNmspId(RepoResourceInterface $res, string $namespace): string {
-        if ($namespace === 'RES') {
-            $nmsp = $res->getRepo()->getBaseUrl();
-        } else {
-            if (!isset($res->getRepo()->getSchema()->namespaces->$namespace)) {
-                throw new RepoLibException("namespace '$namespace' is not defined in the config");
-            }
-            $nmsp = $res->getRepo()->getSchema()->namespaces->$namespace;
+        if (!isset($res->getRepo()->getSchema()->namespaces->$namespace)) {
+            throw new RepoLibException("namespace '$namespace' is not defined in the config");
         }
-        $n   = strlen($nmsp);
-        $ids = $res->getIds();
+        $nmsp = $res->getRepo()->getSchema()->namespaces->$namespace;
+        $n    = strlen($nmsp);
+        $ids  = $res->getIds();
         foreach ($ids as $i) {
             if (substr($i, 0, $n) === $nmsp) {
                 return $i;
