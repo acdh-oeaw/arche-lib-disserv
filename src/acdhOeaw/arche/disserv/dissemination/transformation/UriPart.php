@@ -43,7 +43,7 @@ class UriPart implements iTransformation {
     /**
      * Extracts given URL parts.
      * @param string $value URL to be transformed
-     * @param ... $parts parts to be extracted. One of: scheme (e.g. "https", 
+     * @param string $parts parts to be extracted. One of: scheme (e.g. "https", 
      *   "ftp", etc.), host, port, user, pass, path, query, fragment 
      *   (part of the URL following #)
      * @return string
