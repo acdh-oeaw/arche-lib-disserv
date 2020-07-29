@@ -46,7 +46,7 @@ class UrlEncode implements iTransformation {
      * @return string
      */
     public function transform(string $value): string {
-        return rawurldecode($value);
+        return rawurlencode($value);
     }
 
 }
