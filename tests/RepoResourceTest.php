@@ -58,11 +58,9 @@ class RepoResourceTest extends \PHPUnit\Framework\TestCase {
     }
 
     public function testGetDissServ(): void {
-        $res  = self::$repo->getResourceById('https://id.acdh.oeaw.ac.at/Troesmis/troesmis-title-image.png');
+        $res  = self::$repo->getResourceById('https://id.acdh.oeaw.ac.at/10000');
         $res  = new RepoResource($res->getUri(), self::$repo);
-        $t0   = microtime(true);
         $ds1  = $res->getDissServices();
-        $t1   = microtime(true);
         $urls = [];
         foreach ($ds1 as $i) {
             /* @var $i \acdhOeaw\acdhRepoDisserv\dissemination\Service */
@@ -70,29 +68,25 @@ class RepoResourceTest extends \PHPUnit\Framework\TestCase {
         }
 
 
-        $res = self::$repoDb->getResourceById('https://id.acdh.oeaw.ac.at/Troesmis/troesmis-title-image.png');
+        $res  = self::$repo->getResourceById('https://id.acdh.oeaw.ac.at/10000');
         $res = new RepoResourceDb($res->getUri(), self::$repoDb);
-        $t2  = microtime(true);
         $ds2 = $res->getDissServices();
-        $t3  = microtime(true);
         $n   = 0;
         foreach ($ds2 as $i) {
             $this->assertEquals($urls[$n], $i->getRequest($res)->getUri());
             $n++;
         }
-
-        $this->assertGreaterThan($t3 - $t2, $t1 - $t0);
     }
 
     public function testGetResources(): void {
         $res = self::$repo->getResourceById('https://id.acdh.oeaw.ac.at/dissemination/xmlinsights');
         $res = new Service($res->getUri(), self::$repo);
-        $res = $res->getMatchingResources(20);
+        $res = $res->getMatchingResources(30); // but there are only 21 in the database
         $n   = 0;
         foreach ($res as $i) {
             $n++;
         }
-        $this->assertEquals(20, $n);
+        $this->assertEquals(21, $n);
 
         $res     = self::$repoDb->getResourceById('https://id.acdh.oeaw.ac.at/dissemination/gui');
         $res     = new ServiceDb($res->getUri(), self::$repoDb);
