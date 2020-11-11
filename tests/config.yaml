@@ -1,12 +1,14 @@
 rest:
-    urlBase: https://test.localhost
-    pathBase: /
+    urlBase: https://arche-curation.acdh-dev.oeaw.ac.at
+    pathBase: /api/
     verifyCert: false
     headers:
         metadataReadMode: X-METADATA-READ-MODE
         metadataParentProperty: X-PARENT-PROPERTY
         metadataWriteMode: X-METADATA-WRITE-MODE
         transactionId: X-TRANSACTION-ID
+dbConnStr:
+    guest: 'pgsql: host=127.0.0.1 port=5432 user=repo dbname=www-data password=***'
 schema:
     id: https://vocabs.acdh.oeaw.ac.at/schema#hasIdentifier
     parent: https://vocabs.acdh.oeaw.ac.at/schema#isPartOf
@@ -34,6 +36,8 @@ schema:
         parameterDefaultValue: https://vocabs.acdh.oeaw.ac.at/schema#hasDefaultValue
         parameterRdfProperty: https://vocabs.acdh.oeaw.ac.at/schema#usesRdfProperty
         hasService: https://vocabs.acdh.oeaw.ac.at/schema#hasDissService
+    namespaces:
+        id: https://id.acdh.oeaw.ac.at/
 # client authorization config
 auth:
     httpHeader:

@@ -26,8 +26,11 @@
 
 namespace acdhOeaw\arche\disserv\dissemination;
 
+use Generator;
 use GuzzleHttp\Psr7\Request;
 use acdhOeaw\arche\disserv\RepoResourceInterface;
+use acdhOeaw\acdhRepoLib\QueryPart;
+use acdhOeaw\acdhRepoLib\Schema;
 use acdhOeaw\acdhRepoLib\SearchTerm;
 use acdhOeaw\acdhRepoLib\SearchConfig;
 use acdhOeaw\acdhRepoLib\exception\RepoLibException;
@@ -39,6 +42,133 @@ use zozlak\RdfConstants as RDF;
  * @author zozlak
  */
 trait ServiceTrait {
+
+    /**
+     * Returns an SQL query matching dissemination services and resources
+     * (in any direction).
+     * 
+     * @param int $id resource or dissemination service id
+     * @param int $mode one of:
+     *   - ServiceInterface::QUERY_RES for querying resources for a given 
+     *     dissemination service
+     *   - ServiceInterface::QUERY_DISSERV for querying dissemination services 
+     *     for a given resource
+     * @param acdhOeaw\acdhRepoLib\Schema $schema schema object providing RDF property mappings
+     * @return QueryPart
+     */
+    static public function getMatchQuery(int $id, int $mode, Schema $schema): QueryPart {
+        switch ($mode) {
+            case ServiceInterface::QUERY_DISSERV:
+                $selQuery      = 'dsid';
+                $directQuery   = 'SELECT target_id AS id FROM relations WHERE id = ? AND property = ?';
+                $directParam   = [$id, $schema->dissService->hasService];
+                // all dissemination services
+                $d1Query       = 'SELECT id FROM metadata WHERE property = ? AND substring(value, 1, 1000) = ?';
+                $d1Param       = [RDF::RDF_TYPE, $schema->dissService->class];
+                // only a given resource
+                $m5m6Query     = 'WHERE id = ?';
+                $m5m6Param     = [$id, $id];
+                // all dissemination services without any matching parameter
+                $matchAllQuery = "
+                    SELECT id 
+                    FROM metadata m1
+                    WHERE 
+                        m1.property = ? 
+                        AND substring(m1.value, 1, 1000) = ?
+                        AND NOT EXISTS (
+                            SELECT 1 
+                            FROM metadata m2 JOIN relations r2 USING (id)
+                            WHERE
+                                r2.target_id = m1.id
+                                AND r2.property = ?
+                                AND m2.property = ?
+                        )
+                        
+                ";
+                $matchAllParam = [
+                    RDF::RDF_TYPE, $schema->dissService->class, // first part
+                    $schema->parent, $schema->dissService->matchProperty, // NOT EXISTS part
+                ];
+                break;
+            case ServiceInterface::QUERY_RES:
+                $selQuery      = 'resid';
+                $directQuery   = 'SELECT id FROM relations WHERE target_id = ? AND property = ?';
+                $directParam   = [$id, $schema->dissService->hasService];
+                // only a given dissemination service
+                $d1Query       = 'SELECT ?::bigint AS id';
+                $d1Param       = [$id];
+                // all resources
+                $m5m6Query     = '';
+                $m5m6Param     = [];
+                // all resources if only dissemination service has no matching rules
+                $matchAllQuery = "
+                    SELECT id FROM resources WHERE (
+                        SELECT count(*) = 0
+                        FROM metadata m2 JOIN relations r2 USING (id)
+                        WHERE 
+                            r2.target_id = ?
+                            AND r2.property = ?
+                            AND m2.property = ?
+                     )
+                ";
+                $matchAllParam = [$id, $schema->parent, $schema->dissService->matchProperty];
+                break;
+            default:
+                throw new BadMethodCallException('Wrong $mode parameter value');
+        }
+        $query = "
+            SELECT id FROM (
+                SELECT $selQuery AS id
+                FROM (
+                    SELECT resid, dsid, required, count(*) AS count, sum(passed::int) AS passed
+                    FROM (
+                        SELECT 
+                            coalesce(m5.id, m6.id) AS resid,
+                            dsid, 
+                            dspid, 
+                            coalesce(required::bool, true) AS required, 
+                            coalesce(m5.id, m6.id) IS NOT NULL OR required IS NULL AS passed
+                        FROM 
+                            (
+                                SELECT d1.id AS dsid, r.id AS dspid, m1.value AS required, m2.value AS property, m3.value AS value, m4.target_id AS target_id
+                                FROM
+                                    ($d1Query) d1
+                                    JOIN relations r ON d1.id = r.target_id AND r.property = ?
+                                    JOIN metadata m1 ON r.id = m1.id AND m1.property = ?
+                                    JOIN metadata m2 ON r.id = m2.id AND m2.property = ?
+                                    LEFT JOIN metadata m3 ON r.id = m3.id AND m3.property = ?
+                                    LEFT JOIN relations m4 ON r.id = m4.id AND m4.property = ?
+                            ) d2
+                            LEFT JOIN (SELECT id, property, value FROM metadata $m5m6Query) m5
+                                ON d2.property = m5.property AND (substring(d2.value, 1, 1000) = substring(m5.value, 1, 1000) OR d2.value IS NULL)
+                            LEFT JOIN (SELECT id, property, target_id FROM relations $m5m6Query) m6
+                                ON d2.property = m6.property AND (d2.target_id = m6.target_id OR d2.target_id IS NULL)
+                    ) d3
+                    GROUP BY 1, 2, 3
+                ) d4
+                GROUP BY 1
+                HAVING count(*) = sum((CASE required WHEN true THEN count = passed ELSE passed > 0 END)::int)
+              UNION
+                $directQuery
+              UNION
+                $matchAllQuery
+            ) t ORDER BY id
+        ";
+        $param = array_merge(
+            $d1Param,
+            [
+                $schema->parent, // r
+                $schema->dissService->matchRequired, // m1
+                $schema->dissService->matchProperty, // m2
+                $schema->dissService->matchValue, // m3
+                $schema->dissService->matchValue, // m4
+            ],
+            $m5m6Param,
+            $directParam,
+            $matchAllParam,
+        );
+        return new QueryPart($query, $param);
+    }
 
     /**
      * Parameters list
@@ -116,6 +246,26 @@ trait ServiceTrait {
         $meta  = $this->getMetadata();
         $value = $meta->getLiteral($this->getRepo()->getSchema()->dissService->revProxy)->getValue();
         return $value ?? false;
+    }
+
+    /**
+     * Returns repository resources which can be disseminated by a given service
+     * 
+     * @return Generator
+     */
+    public function getMatchingResources(): Generator {
+        $id    = $this->getUri();
+        $id    = (int) substr($id, strrpos($id, '/') + 1);
+        $query = self::getMatchQuery($id, ServiceInterface::QUERY_RES, $this->getRepo()->getSchema());
+
+        $config               = new SearchConfig();
+        $config->metadataMode = RepoResourceInterface::META_RESOURCE;
+        $config->class        = get_parent_class();
+
+        $tmp = $this->getRepo()->getResourcesBySqlQuery($query->query, $query->param, $config);
+        foreach ($tmp as $i) {
+            yield $i;
+        }
     }
 
     /**

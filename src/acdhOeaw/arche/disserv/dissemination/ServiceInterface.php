@@ -26,6 +26,7 @@
 
 namespace acdhOeaw\arche\disserv\dissemination;
 
+use Generator;
 use GuzzleHttp\Psr7\Request;
 use acdhOeaw\arche\disserv\RepoResourceInterface;
 
@@ -34,6 +35,9 @@ use acdhOeaw\arche\disserv\RepoResourceInterface;
  * @author zozlak
  */
 interface ServiceInterface {
+
+    const QUERY_RES     = 1;
+    const QUERY_DISSERV = 2;
 
     /**
      * Returns all return formats provided by the dissemination service.
@@ -74,4 +78,11 @@ interface ServiceInterface {
      * @return bool
      */
     public function getRevProxy(): bool;
+    
+    /**
+     * Returns repository resources which can be disseminated by a given service
+     * 
+     * @return Generator
+     */
+    public function getMatchingResources(): Generator;
 }
