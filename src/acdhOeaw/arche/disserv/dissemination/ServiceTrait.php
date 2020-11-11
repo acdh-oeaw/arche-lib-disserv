@@ -251,12 +251,21 @@ trait ServiceTrait {
     /**
      * Returns repository resources which can be disseminated by a given service
      * 
+     * @param int $limit
+     * @param int $offset
      * @return Generator
      */
-    public function getMatchingResources(): Generator {
+    public function getMatchingResources(int $limit = null, int $offset = null): Generator {
         $id    = $this->getUri();
         $id    = (int) substr($id, strrpos($id, '/') + 1);
         $query = self::getMatchQuery($id, ServiceInterface::QUERY_RES, $this->getRepo()->getSchema());
+
+        if ($limit > 0) {
+            $query->query .= " LIMIT $limit";
+        }
+        if ($offset > 0) {
+            $query->query .= " OFFSET $offset";
+        }
 
         $config               = new SearchConfig();
         $config->metadataMode = RepoResourceInterface::META_RESOURCE;

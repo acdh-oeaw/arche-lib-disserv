@@ -58,66 +58,65 @@ class RepoResourceTest extends \PHPUnit\Framework\TestCase {
     }
 
     public function testGetDissServ(): void {
-        echo "\n---------------------------------------\n";
-
-        $res = self::$repo->getResourceById('https://id.acdh.oeaw.ac.at/Troesmis/troesmis-title-image.png');
-        $res = new RepoResource($res->getUri(), self::$repo);
-        $t0  = microtime(true);
-        $ds  = $res->getDissServices();
-        $t1  = microtime(true);
-        $this->assertTrue(is_array($ds));
-        foreach ($ds as $i) {
+        $res  = self::$repo->getResourceById('https://id.acdh.oeaw.ac.at/Troesmis/troesmis-title-image.png');
+        $res  = new RepoResource($res->getUri(), self::$repo);
+        $t0   = microtime(true);
+        $ds1  = $res->getDissServices();
+        $t1   = microtime(true);
+        $urls = [];
+        foreach ($ds1 as $i) {
             /* @var $i \acdhOeaw\acdhRepoDisserv\dissemination\Service */
-            echo $i->getRequest($res)->getUri() . "\n";
+            $urls[] = $i->getRequest($res)->getUri();
         }
 
-        echo "\n---------------------------------------\n";
 
         $res = self::$repoDb->getResourceById('https://id.acdh.oeaw.ac.at/Troesmis/troesmis-title-image.png');
         $res = new RepoResourceDb($res->getUri(), self::$repoDb);
         $t2  = microtime(true);
-        $ds  = $res->getDissServices();
+        $ds2 = $res->getDissServices();
         $t3  = microtime(true);
-        $this->assertTrue(is_array($ds));
-        foreach ($ds as $i) {
-//            /* @var $i \acdhOeaw\acdhRepoDisserv\dissemination\Service */
-            echo $i->getRequest($res)->getUri() . "\n";
+        $n   = 0;
+        foreach ($ds2 as $i) {
+            $this->assertEquals($urls[$n], $i->getRequest($res)->getUri());
+            $n++;
         }
 
-        $this->assertTrue($t1 - $t0 > $t3 - $t2);
-        print_r(['http' => $t1 - $t0, 'db' => $t3 - $t2]);
+        $this->assertGreaterThan($t3 - $t2, $t1 - $t0);
     }
 
     public function testGetResources(): void {
-        echo "\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
-
         $res = self::$repo->getResourceById('https://id.acdh.oeaw.ac.at/dissemination/xmlinsights');
         $res = new Service($res->getUri(), self::$repo);
-        $t0  = microtime(true);
-        $res = $res->getMatchingResources();
-        $t1  = microtime(true);
+        $res = $res->getMatchingResources(20);
         $n   = 0;
         foreach ($res as $i) {
             $n++;
         }
-        echo $n . "\n";
-        $this->assertGreaterThan(1, $n);
+        $this->assertEquals(20, $n);
 
-        echo "\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
-
-        $res = self::$repoDb->getResourceById('https://id.acdh.oeaw.ac.at/dissemination/gui');
-        $res = new ServiceDb($res->getUri(), self::$repoDb);
-        $t2  = microtime(true);
-        $res = $res->getMatchingResources();
-        $t3  = microtime(true);
-        $n   = 0;
-        foreach ($res as $i) {
+        $res     = self::$repoDb->getResourceById('https://id.acdh.oeaw.ac.at/dissemination/gui');
+        $res     = new ServiceDb($res->getUri(), self::$repoDb);
+        $matches = $res->getMatchingResources(10);
+        $n       = 0;
+        $urls    = [];
+        foreach ($matches as $i) {
+            $urls[$n] = $i->getUri();
             $n++;
         }
-        echo $n . "\n";
-        $this->assertGreaterThan(10, $n);
-
-        print_r(['http-xml' => $t1 - $t0, 'db-gui' => $t3 - $t2]);
+        $matches = $res->getMatchingResources(10, 0);
+        $n       = 0;
+        foreach ($matches as $i) {
+            $this->assertEquals($urls[$n], $i->getUri());
+            $n++;
+        }
+        $this->assertEquals(10, $n);
+        $matches = $res->getMatchingResources(10, 10);
+        $n       = 0;
+        foreach ($matches as $i) {
+            $this->assertNotContains($i->getUri(), $urls);
+            $n++;
+        }
+        $this->assertEquals(10, $n);
     }
 
 }
