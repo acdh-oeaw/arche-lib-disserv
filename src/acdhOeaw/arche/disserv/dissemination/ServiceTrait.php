@@ -120,7 +120,7 @@ trait ServiceTrait {
             SELECT id FROM (
                 SELECT $selQuery AS id
                 FROM (
-                    SELECT resid, dsid, required, count(*) AS count, sum(passed::int) AS passed
+                    SELECT $selQuery, required, count(*) AS count, sum(passed::int) AS passed
                     FROM (
                         SELECT 
                             coalesce(m5.id, m6.id) AS resid,
@@ -144,7 +144,7 @@ trait ServiceTrait {
                             LEFT JOIN (SELECT id, property, target_id FROM relations $m5m6Query) m6
                                 ON d2.property = m6.property AND (d2.target_id = m6.target_id OR d2.target_id IS NULL)
                     ) d3
-                    GROUP BY 1, 2, 3
+                    GROUP BY 1, 2
                 ) d4
                 GROUP BY 1
                 HAVING count(*) = sum((CASE required WHEN true THEN count = passed ELSE passed > 0 END)::int)
