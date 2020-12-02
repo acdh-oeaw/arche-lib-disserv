@@ -398,5 +398,14 @@ trait ServiceTrait {
         }
         throw new RepoLibException('no ID in namespace ' . $namespace);
     }
+    
+    /**
+     * Get the parameters 
+     * @return array
+    */
+    public function getParameters(): array {
+        $this->loadParameters();
+        return $this->param;
+    }
 
 }
