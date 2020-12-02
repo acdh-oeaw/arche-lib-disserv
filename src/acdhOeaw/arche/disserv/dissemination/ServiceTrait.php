@@ -381,7 +381,7 @@ trait ServiceTrait {
             if (substr($i, 0, $n) === $nmsp) {
                 $otherNmsp = false;
                 foreach ($res->getRepo()->getSchema()->namespaces as $j) {
-                    if ($nmsp !== $j && substr($j, 0, strlen($j)) === $j) {
+                    if ($nmsp !== $j && substr($i, 0, strlen($j)) === $j) {
                         $otherNmsp = true;
                         break;
                     }
