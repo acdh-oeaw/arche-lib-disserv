@@ -360,7 +360,9 @@ trait ServiceTrait {
     }
 
     /**
-     * Fetches a resource id in a given namespace
+     * Fetches a resource id in a given namespace.
+     * 
+     * If namespaces overlap, tries to to avoid id in the overlapping ones.
      * 
      * @param RepoResourceInterface $res
      * @param string $namespace
@@ -371,13 +373,28 @@ trait ServiceTrait {
         if (!isset($res->getRepo()->getSchema()->namespaces->$namespace)) {
             throw new RepoLibException("namespace '$namespace' is not defined in the config");
         }
-        $nmsp = $res->getRepo()->getSchema()->namespaces->$namespace;
-        $n    = strlen($nmsp);
-        $ids  = $res->getIds();
+        $nmsp  = $res->getRepo()->getSchema()->namespaces->$namespace;
+        $n     = strlen($nmsp);
+        $ids   = $res->getIds();
+        $match = null;
         foreach ($ids as $i) {
             if (substr($i, 0, $n) === $nmsp) {
-                return $i;
+                $otherNmsp = false;
+                foreach ($res->getRepo()->getSchema()->namespaces as $j) {
+                    if ($nmsp !== $j && substr($j, 0, strlen($j)) === $j) {
+                        $otherNmsp = true;
+                        break;
+                    }
+                }
+                if (!$otherNmsp) {
+                    return $i;
+                } else {
+                    $match = $i;
+                }
             }
+        }
+        if ($match !== null) {
+            return $match;
         }
         throw new RepoLibException('no ID in namespace ' . $namespace);
     }

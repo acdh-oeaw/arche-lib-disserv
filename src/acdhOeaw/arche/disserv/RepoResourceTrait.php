@@ -28,7 +28,6 @@ namespace acdhOeaw\arche\disserv;
 
 use acdhOeaw\arche\disserv\dissemination\Service;
 use acdhOeaw\acdhRepoLib\SearchConfig;
-use zozlak\RdfConstants as RDF;
 
 /**
  * Description of RepoResourceTrait
