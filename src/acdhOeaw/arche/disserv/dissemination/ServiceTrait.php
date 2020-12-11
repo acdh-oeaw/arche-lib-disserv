@@ -140,9 +140,9 @@ trait ServiceTrait {
                                     LEFT JOIN relations m4 ON r.id = m4.id AND m4.property = ?
                             ) d2
                             LEFT JOIN (SELECT id, property, value FROM metadata $m5m6Query) m5
-                                ON d2.property = m5.property AND (substring(d2.value, 1, 1000) = substring(m5.value, 1, 1000) OR d2.value IS NULL)
+                                ON d2.property = m5.property AND (substring(d2.value, 1, 1000) = substring(m5.value, 1, 1000) OR (d2.value IS NULL AND d2.target_id IS NULL))
                             LEFT JOIN (SELECT id, property, target_id FROM relations $m5m6Query) m6
-                                ON d2.property = m6.property AND (d2.target_id = m6.target_id OR d2.target_id IS NULL)
+                                ON d2.property = m6.property AND (d2.target_id = m6.target_id OR (d2.target_id IS NULL AND d2.value IS NULL))
                     ) d3
                     GROUP BY 1, 2
                 ) d4
