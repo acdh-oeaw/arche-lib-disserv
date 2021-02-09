@@ -119,14 +119,13 @@ class RepoResourceTest extends \PHPUnit\Framework\TestCase {
      */
     public function testMatchLiteralUri(): void {
         // from resource side
-
         $res = self::$repo->getResourceById('https://id.acdh.oeaw.ac.at/10000');
         $res = new RepoResource($res->getUri(), self::$repo);
         $ds  = $res->getDissServices();
         $this->assertArrayHasKey('application/x-cmdi+xml', $ds);
 
         $res = self::$repoDb->getResourceById('https://id.acdh.oeaw.ac.at/10000');
-        $res = new RepoResource($res->getUri(), self::$repoDb);
+        $res = new RepoResourceDb($res->getUri(), self::$repoDb);
         $ds  = $res->getDissServices();
         $this->assertArrayHasKey('application/x-cmdi+xml', $ds);
 
@@ -137,8 +136,33 @@ class RepoResourceTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals(11, iterator_count($matches));
 
         $res     = self::$repoDb->getResourceById('https://id.acdh.oeaw.ac.at/dissemination/rawCmdi');
-        $res     = new Service($res->getUri(), self::$repoDb);
+        $res     = new ServiceDb($res->getUri(), self::$repoDb);
         $matches = $res->getMatchingResources(15); // but there are only 11 in the database
         $this->assertEquals(11, iterator_count($matches));
+    }
+    
+    public function testDissServParam(): void {
+        // from resource side
+        $res = self::$repo->getResourceById('https://id.acdh.oeaw.ac.at/10100');
+        $res = new RepoResource($res->getUri(), self::$repo);
+        $ds  = $res->getDissServices();
+        $this->assertStringContainsString('width=100&height=100', $ds['thumbnail']->getRequest($res)->getUri());
+
+        $res = self::$repoDb->getResourceById('https://id.acdh.oeaw.ac.at/10100');
+        $res = new RepoResourceDb($res->getUri(), self::$repoDb);
+        $ds  = $res->getDissServices();
+        $this->assertStringContainsString('width=100&height=100', $ds['thumbnail']->getRequest($res)->getUri());
+
+        // from diss serv side
+        $ds     = self::$repo->getResourceById('https://id.acdh.oeaw.ac.at/dissemination/thumbnail');
+        $ds     = new Service($ds->getUri(), self::$repo);
+        $matches = $ds->getMatchingResources(1);
+        $this->assertStringContainsString('width=100&height=100', $ds->getRequest($matches->current())->getUri());
+
+        $ds     = self::$repoDb->getResourceById('https://id.acdh.oeaw.ac.at/dissemination/thumbnail');
+        $ds     = new ServiceDb($ds->getUri(), self::$repoDb);
+        $matches = $ds->getMatchingResources(1); // but there are only 11 in the database
+        $res = $matches->current();
+        $this->assertStringContainsString('width=100&height=100', $ds->getRequest($matches->current())->getUri());
     }
 }
