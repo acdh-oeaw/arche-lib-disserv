@@ -66,7 +66,7 @@ trait ServiceTrait {
                 $d1Query       = 'SELECT id FROM metadata WHERE property = ? AND substring(value, 1, 1000) = ?';
                 $d1Param       = [RDF::RDF_TYPE, $schema->dissService->class];
                 // only a given resource
-                $m5m6Query     = 'WHERE id = ?';
+                $m5m6Query     = 'WHERE t.id = ?';
                 $m5m6Param     = [$id, $id];
                 // all dissemination services without any matching parameter
                 $matchAllQuery = "
@@ -139,10 +139,10 @@ trait ServiceTrait {
                                     LEFT JOIN metadata m3 ON r.id = m3.id AND m3.property = ?
                                     LEFT JOIN relations m4 ON r.id = m4.id AND m4.property = ?
                             ) d2
-                            LEFT JOIN (SELECT id, property, value FROM metadata $m5m6Query) m5
+                            LEFT JOIN (SELECT id, property, value FROM metadata t $m5m6Query) m5
                                 ON d2.property = m5.property AND (substring(d2.value, 1, 1000) = substring(m5.value, 1, 1000) OR (d2.value IS NULL AND d2.target_id IS NULL))
-                            LEFT JOIN (SELECT id, property, target_id FROM relations $m5m6Query) m6
-                                ON d2.property = m6.property AND (d2.target_id = m6.target_id OR (d2.target_id IS NULL AND d2.value IS NULL))
+                            LEFT JOIN (SELECT t.id, property, target_id, ids FROM relations t JOIN identifiers i ON t.target_id = i.id $m5m6Query) m6
+                                ON d2.property = m6.property AND (d2.target_id = m6.target_id OR d2.value = m6.ids OR (d2.target_id IS NULL AND d2.value IS NULL))
                     ) d3
                     GROUP BY 1, 2
                 ) d4

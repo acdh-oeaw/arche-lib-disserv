@@ -68,7 +68,7 @@ class RepoResourceTest extends \PHPUnit\Framework\TestCase {
         }
 
 
-        $res  = self::$repo->getResourceById('https://id.acdh.oeaw.ac.at/10000');
+        $res = self::$repo->getResourceById('https://id.acdh.oeaw.ac.at/10000');
         $res = new RepoResourceDb($res->getUri(), self::$repoDb);
         $ds2 = $res->getDissServices();
         $n   = 0;
@@ -113,4 +113,32 @@ class RepoResourceTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals(10, $n);
     }
 
+    /**
+     * Tests matching on a relation while the match value is a literal
+     * @return void
+     */
+    public function testMatchLiteralUri(): void {
+        // from resource side
+
+        $res = self::$repo->getResourceById('https://id.acdh.oeaw.ac.at/10000');
+        $res = new RepoResource($res->getUri(), self::$repo);
+        $ds  = $res->getDissServices();
+        $this->assertArrayHasKey('application/x-cmdi+xml', $ds);
+
+        $res = self::$repoDb->getResourceById('https://id.acdh.oeaw.ac.at/10000');
+        $res = new RepoResource($res->getUri(), self::$repoDb);
+        $ds  = $res->getDissServices();
+        $this->assertArrayHasKey('application/x-cmdi+xml', $ds);
+
+        // from diss serv side
+        $res     = self::$repo->getResourceById('https://id.acdh.oeaw.ac.at/dissemination/rawCmdi');
+        $res     = new Service($res->getUri(), self::$repo);
+        $matches = $res->getMatchingResources(15); // but there are only 11 in the database
+        $this->assertEquals(11, iterator_count($matches));
+
+        $res     = self::$repoDb->getResourceById('https://id.acdh.oeaw.ac.at/dissemination/rawCmdi');
+        $res     = new Service($res->getUri(), self::$repoDb);
+        $matches = $res->getMatchingResources(15); // but there are only 11 in the database
+        $this->assertEquals(11, iterator_count($matches));
+    }
 }
