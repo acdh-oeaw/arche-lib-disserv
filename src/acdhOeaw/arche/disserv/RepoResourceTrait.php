@@ -47,7 +47,7 @@ trait RepoResourceTrait {
 
         $config                         = new SearchConfig();
         $config->metadataMode           = self::META_NEIGHBORS;
-        $config->metadataParentProperty = $schema->parent;
+        $config->metadataParentProperty = $schema->dissService->parent ?? $schema->parent;
         $config->class                  = Service::class;
 
         $tmp = $this->getRepo()->getResourcesBySqlQuery($query->query, $query->param, $config);

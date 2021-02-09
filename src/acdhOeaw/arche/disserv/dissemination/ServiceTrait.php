@@ -57,6 +57,7 @@ trait ServiceTrait {
      * @return QueryPart
      */
     static public function getMatchQuery(int $id, int $mode, Schema $schema): QueryPart {
+        $parentProp = $schema->dissService->parent ?? $schema->parent;
         switch ($mode) {
             case ServiceInterface::QUERY_DISSERV:
                 $selQuery      = 'dsid';
@@ -87,7 +88,7 @@ trait ServiceTrait {
                 ";
                 $matchAllParam = [
                     RDF::RDF_TYPE, $schema->dissService->class, // first part
-                    $schema->parent, $schema->dissService->matchProperty, // NOT EXISTS part
+                    $parentProp, $schema->dissService->matchProperty, // NOT EXISTS part
                 ];
                 break;
             case ServiceInterface::QUERY_RES:
@@ -111,7 +112,7 @@ trait ServiceTrait {
                             AND m2.property = ?
                      )
                 ";
-                $matchAllParam = [$id, $schema->parent, $schema->dissService->matchProperty];
+                $matchAllParam = [$id, $parentProp, $schema->dissService->matchProperty];
                 break;
             default:
                 throw new BadMethodCallException('Wrong $mode parameter value');
@@ -157,7 +158,7 @@ trait ServiceTrait {
         $param = array_merge(
             $d1Param,
             [
-                $schema->parent, // r
+                $parentProp, // r
                 $schema->dissService->matchRequired, // m1
                 $schema->dissService->matchProperty, // m2
                 $schema->dissService->matchValue, // m3
@@ -326,9 +327,11 @@ trait ServiceTrait {
         if (is_array($this->param)) {
             return;
         }
+        $schema     = $this->getRepo()->getSchema();
+        $parentProp = $schema->dissService->parent ?? $schema->parent;
         if ($this->loadParamFromMeta) {
-            $type        = $this->getRepo()->getSchema()->dissService->parameterClass;
-            $parentProp  = $this->getRepo()->getSchema()->parent;
+            $type        = $schema->dissService->parameterClass;
+            $parentProp  = $parentProp;
             $graph       = $this->getGraph()->getGraph();
             $params      = $graph->resourcesMatching($parentProp, $graph->resource($this->getUri()));
             $this->param = [];
@@ -342,8 +345,8 @@ trait ServiceTrait {
             }
         } else {
             $typeProp          = RDF::RDF_TYPE;
-            $type              = $this->getRepo()->getSchema()->dissService->parameterClass;
-            $parentProp        = $this->getRepo()->getSchema()->parent;
+            $type              = $schema->dissService->parameterClass;
+            $parentProp        = $parentProp;
             $terms             = [
                 new SearchTerm($typeProp, $type),
                 new SearchTerm($parentProp, $this->getUri()),
@@ -398,14 +401,13 @@ trait ServiceTrait {
         }
         throw new RepoLibException('no ID in namespace ' . $namespace);
     }
-    
+
     /**
      * Get the parameters 
      * @return array
-    */
+     */
     public function getParameters(): array {
         $this->loadParameters();
         return $this->param;
     }
-
 }
