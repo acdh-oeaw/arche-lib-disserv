@@ -65,6 +65,7 @@ schema:
     binaryContent: https://vocabs.acdh.oeaw.ac.at/schema#BinaryContent
     sharedObject: https://vocabs.acdh.oeaw.ac.at/schema#AgentOrPlaceOrPublication
     collection: https://vocabs.acdh.oeaw.ac.at/schema#Collection
+    topCollection: https://vocabs.acdh.oeaw.ac.at/schema#TopCollection
   ingest:
     location: https://vocabs.acdh.oeaw.ac.at/schema#hasLocationPath
     containerToUriPrefix: acdhContainer://

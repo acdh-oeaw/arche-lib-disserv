@@ -79,14 +79,14 @@ class RepoResourceTest extends \PHPUnit\Framework\TestCase {
     }
 
     public function testGetResources(): void {
-        $res = self::$repo->getResourceById('https://id.acdh.oeaw.ac.at/dissemination/xmlinsights');
+        $res = self::$repo->getResourceById('https://id.acdh.oeaw.ac.at/dissemination/cmdi2html');
         $res = new Service($res->getUri(), self::$repo);
-        $res = $res->getMatchingResources(30); // but there are only 21 in the database
+        $res = $res->getMatchingResources(200); // but there are < 200 in the database
         $n   = 0;
         foreach ($res as $i) {
             $n++;
         }
-        $this->assertEquals(21, $n);
+        $this->assertLessThan(200, $n);
 
         $res     = self::$repoDb->getResourceById('https://id.acdh.oeaw.ac.at/dissemination/gui');
         $res     = new ServiceDb($res->getUri(), self::$repoDb);
