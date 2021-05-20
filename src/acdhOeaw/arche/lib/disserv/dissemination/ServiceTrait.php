@@ -302,21 +302,28 @@ trait ServiceTrait {
 
         $values = [];
         foreach ($param as $i) {
-            $ii   = explode('|', substr($i, 1, -1));
-            $name = array_shift($ii);
+            $ii    = explode('|', substr($i, 1, -1));
+            $name  = array_shift($ii);
+            $match = preg_match('/^([^@&]+)(?:([@&])(.*))?$/', $name, $matches);
+            if ($match === false) {
+                throw new RepoLibException("Wrong parameter definition: $name");
+            }
+            $name   = $matches[1];
+            $force  = ($matches[2] ?? '') === '&';
+            $prefix = $matches[3] ?? null;
 
-            if ($name === 'RES_URI') {
-                $value = Parameter::value($res, '', $res->getUri(), $ii);
+            if ($name === 'RES_URI' || $name === 'RES_URL') {
+                $value = Parameter::applyTransformations($res->getUri(), $ii);
             } else if ($name === 'RES_ID') {
                 $id    = substr($res->getUri(), strlen($res->getRepo()->getBaseUrl()));
-                $value = Parameter::value($res, '', $id, $ii);
-            } else if (preg_match('/^[a-zA-Z0-9]+_ID$/', $name)) {
-                $id    = $this->getResNmspId($res, substr($name, 0, -3));
-                $value = Parameter::value($res, '', $id, $ii);
+                $value = Parameter::applyTransformations($id, $ii);
+            } else if ($name === 'ID') {
+                $id    = $this->getResNmspId($res, $prefix, $force);
+                $value = Parameter::applyTransformations($id, $ii);
             } else if (isset($this->param[$name])) {
-                $value = $this->param[$name]->getValue($res, $ii);
+                $value = $this->param[$name]->getValue($res, $ii, $prefix, $force);
             } else {
-                throw new RepoLibException('unknown parameter ' . $name . ' (' . $this->getUri() . ')');
+                throw new RepoLibException('Unknown parameter ' . $name . ' (' . $this->getUri() . ')');
             }
             $values[$i] = $value;
         }
@@ -371,22 +378,23 @@ trait ServiceTrait {
      * 
      * @param RepoResourceInterface $res
      * @param string $namespace
+     * @param bool $force
      * @return string
      * @throws RepoLibException
      */
-    private function getResNmspId(RepoResourceInterface $res, string $namespace): string {
+    private function getResNmspId(RepoResourceInterface $res, string $namespace,
+                                  bool $force): string {
         if (!isset($res->getRepo()->getSchema()->namespaces->$namespace)) {
             throw new RepoLibException("namespace '$namespace' is not defined in the config");
         }
         $nmsp  = $res->getRepo()->getSchema()->namespaces->$namespace;
-        $n     = strlen($nmsp);
         $ids   = $res->getIds();
         $match = null;
         foreach ($ids as $i) {
-            if (substr($i, 0, $n) === $nmsp) {
+            if (str_starts_with($i, $nmsp)) {
                 $otherNmsp = false;
-                foreach ($res->getRepo()->getSchema()->namespaces as $j) {
-                    if ($nmsp !== $j && substr($i, 0, strlen($j)) === $j) {
+                foreach ($this->getRepo()->getSchema()->namespaces as $j) {
+                    if ($nmsp !== $j && str_starts_with($i, $j)) {
                         $otherNmsp = true;
                         break;
                     }
@@ -401,7 +409,11 @@ trait ServiceTrait {
         if ($match !== null) {
             return $match;
         }
-        throw new RepoLibException('no ID in namespace ' . $namespace);
+        if ($force || count($ids) === 0) {
+            throw new RepoLibException('no ID in namespace ' . $namespace);
+        } else {
+            return $ids[0];
+        }
     }
 
     /**

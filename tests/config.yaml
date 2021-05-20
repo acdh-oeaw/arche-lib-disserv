@@ -40,6 +40,7 @@ schema:
     hasService: https://vocabs.acdh.oeaw.ac.at/schema#hasDissService
     parent: https://vocabs.acdh.oeaw.ac.at/schema#relation
   namespaces:
+    root: http://127.0.0.1/
     id: https://id.acdh.oeaw.ac.at/
     ontology: https://vocabs.acdh.oeaw.ac.at/schema#
     vid: https://id.acdh.oeaw.ac.at/vid/

@@ -138,7 +138,7 @@ class RepoResourceTest extends \PHPUnit\Framework\TestCase {
         $matches = $res->getMatchingResources(15); // but there are only 11 in the database
         $this->assertEquals(11, iterator_count($matches));
     }
-    
+
     public function testDissServParam(): void {
         // from resource side
         $res = self::$repo->getResourceById('https://id.acdh.oeaw.ac.at/10100');
@@ -152,15 +152,15 @@ class RepoResourceTest extends \PHPUnit\Framework\TestCase {
         $this->assertStringContainsString('width=100&height=100', $ds['thumbnail']->getRequest($res)->getUri());
 
         // from diss serv side
-        $ds     = self::$repo->getResourceById('https://id.acdh.oeaw.ac.at/dissemination/thumbnail');
-        $ds     = new Service($ds->getUri(), self::$repo);
+        $ds      = self::$repo->getResourceById('https://id.acdh.oeaw.ac.at/dissemination/thumbnail');
+        $ds      = new Service($ds->getUri(), self::$repo);
         $matches = $ds->getMatchingResources(1);
         $this->assertStringContainsString('width=100&height=100', $ds->getRequest($matches->current())->getUri());
 
-        $ds     = self::$repoDb->getResourceById('https://id.acdh.oeaw.ac.at/dissemination/thumbnail');
-        $ds     = new ServiceDb($ds->getUri(), self::$repoDb);
+        $ds      = self::$repoDb->getResourceById('https://id.acdh.oeaw.ac.at/dissemination/thumbnail');
+        $ds      = new ServiceDb($ds->getUri(), self::$repoDb);
         $matches = $ds->getMatchingResources(1); // but there are only 11 in the database
-        $res = $matches->current();
+        $res     = $matches->current();
         $this->assertStringContainsString('width=100&height=100', $ds->getRequest($matches->current())->getUri());
     }
 }

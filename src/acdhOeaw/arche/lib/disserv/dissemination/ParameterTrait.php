@@ -26,6 +26,7 @@
 
 namespace acdhOeaw\arche\lib\disserv\dissemination;
 
+use EasyRdf\Resource;
 use acdhOeaw\arche\lib\exception\RepoLibException;
 use acdhOeaw\arche\lib\disserv\RepoResourceInterface;
 use acdhOeaw\arche\lib\disserv\dissemination\transformation\iTransformation;
@@ -69,31 +70,19 @@ trait ParameterTrait {
     }
 
     /**
-     * Returns parameter value for a given resource.
-     * @param RepoResourceInterface $res repository resource to return the value for
-     * @param string $valueProp RDF property holding the parameter value. If
-     *   empty, the $default value is used.
-     * @param string $default parameter default value
-     * @param string $transformations transformations to be applied to the parameter value
+     * Applies given transformations to a value
+     * @param string $value value
+     * @param string $transformations transformations to be applied to the value
      * @return string
      */
-    static public function value(RepoResourceInterface $res, string $valueProp,
-                                 string $default, array $transformations): string {
-        $value = $default;
-
-        if ($valueProp !== '') {
-            $matches = $res->getGraph()->all($valueProp);
-            if (count($matches) > 0) {
-                $value = (string) $matches[0];
-            }
-        }
-
+    static public function applyTransformations(string $value,
+                                                array $transformations = []): string {
         foreach ($transformations as $i) {
             $matches = [];
             preg_match('|^([^(]+)([(].*[)])?$|', $i, $matches);
             $name    = $matches[1];
             if (!isset(self::$transformations[$name])) {
-                throw new RepoLibException('unknown transformation');
+                throw new RepoLibException('Unknown transformation');
             }
 
             $param = [$value];
@@ -107,9 +96,17 @@ trait ParameterTrait {
             $transformation = new self::$transformations[$name]();
             $value          = $transformation->transform(...$param);
         }
-
         return $value;
     }
+
+    private ?string $valueProp;
+    private string $default = '';
+
+    /**
+     * 
+     * @var array<string>
+     */
+    private array $namespaces = [];
 
     /**
      * Returns parameter name
@@ -123,27 +120,78 @@ trait ParameterTrait {
     /**
      * Return parameter value for a given repository resource
      * @param RepoResourceInterface $res repository resource to get the value for
-     * @param string $transformations transformations to be applied to the value
+     * @param array<string> $transformations transformations to be applied to the value
+     * @param ?string $prefix preferred value prefix
+     * @param bool $forcePrefix should error be thrown if $prefix is defined and
+     *   no value with a given prefix can be found
      * @return string
      * @see transform()
      */
     public function getValue(RepoResourceInterface $res,
-                             array $transformations = []): string {
-        $overwrite = filter_input(INPUT_GET, $this->getName());
-        if ($overwrite !== null) {
-            $valueProp = '';
-            $default   = $overwrite;
-        } else {
-            $meta      = $this->getGraph();
-            $default   = $meta->all($this->getRepo()->getSchema()->dissService->parameterDefaultValue);
-            $default   = count($default) > 0 ? (string) $default[0] : '';
-            $valueProp = $meta->all($this->getRepo()->getSchema()->dissService->parameterRdfProperty);
-            if (count($valueProp) > 0) {
-                $valueProp = (string) $valueProp[0];
+                             array $transformations = [],
+                             ?string $prefix = null, bool $forcePrefix = false): string {
+        $value = filter_input(INPUT_GET, $this->getName());
+        if ($value === null) {
+            $value = $this->findValue($res->getGraph(), $prefix, $forcePrefix);
+        }
+        return self::applyTransformations($value, $transformations);
+    }
+
+    private function findValue(Resource $meta, ?string $prefix, bool $force): string {
+        $this->init();
+        if ($this->valueProp === null) {
+            return $this->default;
+        }
+
+        $values = $meta->all($this->valueProp);
+        if (count($values) === 0) {
+            return $this->default;
+        }
+
+        if (empty($prefix)) {
+            return (string) $values[0];
+        }
+        $prefix = $this->namespaces[$prefix] ?? throw new RepoLibException("namespace '$prefix' is not defined in the config");
+
+        $allValues = [];
+        foreach ($values as $i) {
+            if ($i instanceof Resource) {
+                $i         = new self($i->getUri(), $this->getRepo());
+                $allValues = array_merge($allValues, $i->getIds());
             } else {
-                $valueProp = '';
+                $allValues[] = (string) $i;
             }
         }
-        return self::value($res, $valueProp, $default, $transformations);
+        $allValues = array_unique($allValues);
+
+        $match = null;
+        foreach ($allValues as $value) {
+            if (str_starts_with($value, $prefix)) {
+                $inOtherNmsp = false;
+                foreach ($this->namespaces as $otherNmsp) {
+                    if ($prefix !== $otherNmsp && str_starts_with($value, $otherNmsp)) {
+                        $inOtherNmsp = true;
+                        break;
+                    }
+                }
+                if (!$inOtherNmsp) {
+                    return $value;
+                } else {
+                    $match = $value;
+                }
+            }
+        }
+        return $match ?? ($force ? $this->default : $values[0]);
+    }
+
+    private function init(): void {
+        if (!isset($this->valueProp)) {
+            $meta             = $this->getGraph();
+            $tmp              = $meta->all($this->getRepo()->getSchema()->dissService->parameterDefaultValue);
+            $this->default    = count($tmp) > 0 ? (string) $tmp[0] : '';
+            $tmp              = $meta->all($this->getRepo()->getSchema()->dissService->parameterRdfProperty);
+            $this->valueProp  = count($tmp) > 0 ? (string) $tmp[0] : null;
+            $this->namespaces = (array) $this->getRepo()->getSchema()->namespaces ?? array();
+        }
     }
 }
