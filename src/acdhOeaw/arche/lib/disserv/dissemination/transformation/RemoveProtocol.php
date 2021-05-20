@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2020 Austrian Centre for Digital Humanities.
+ * Copyright 2019 Austrian Centre for Digital Humanities.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,28 +24,38 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\arche\disserv\dissemination;
-
-use acdhOeaw\arche\disserv\RepoResourceInterface;
+namespace acdhOeaw\arche\lib\disserv\dissemination\transformation;
 
 /**
- *
+ * URL encodes given value
+ * 
  * @author zozlak
  */
-interface ParameterInterface extends \acdhOeaw\arche\disserv\RepoResourceInterface {
+class RemoveProtocol implements iTransformation {
 
     /**
-     * Returns parameter name
-     * @return string
+     * Returns transformation name
      */
-    public function getName(): string;
+    public function getName(): string {
+        return 'removeprotocol';
+    }
 
     /**
-     * Return parameter value for a given repository resource
-     * @param FedoraResource $res repository resource to get the value for
-     * @param string $transformations transformations to be applied to the value
+     * Returns raw URL decoded value from the acdh identifier.
+     * @param string $value value to be transformed
      * @return string
-     * @see transform()
      */
-    public function getValue(RepoResourceInterface $res, array $transformations = []): string;
+    public function transform(string $value): string {
+        
+        if (strpos($value, 'hdl.handle.net') !== false) {
+            $value = str_replace("http://", "", $value);
+        }else if(strpos($value, 'https') !== false) {
+            $value = str_replace("https://", "", $value);
+        }else {
+            $value = str_replace("http://", "", $value);
+        }
+        return $value;
+        
+    }
+
 }

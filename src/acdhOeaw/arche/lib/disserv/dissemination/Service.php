@@ -24,9 +24,9 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\arche\disserv\dissemination;
+namespace acdhOeaw\arche\lib\disserv\dissemination;
 
-use acdhOeaw\arche\disserv\RepoResource;
+use acdhOeaw\arche\lib\disserv\RepoResource;
 
 /**
  * Represents a dissemination service.

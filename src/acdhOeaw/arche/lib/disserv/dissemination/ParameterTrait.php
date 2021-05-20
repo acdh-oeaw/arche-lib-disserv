@@ -24,11 +24,11 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\arche\disserv\dissemination;
+namespace acdhOeaw\arche\lib\disserv\dissemination;
 
-use acdhOeaw\acdhRepoLib\exception\RepoLibException;
-use acdhOeaw\arche\disserv\RepoResourceInterface;
-use acdhOeaw\arche\disserv\dissemination\transformation\iTransformation;
+use acdhOeaw\arche\lib\exception\RepoLibException;
+use acdhOeaw\arche\lib\disserv\RepoResourceInterface;
+use acdhOeaw\arche\lib\disserv\dissemination\transformation\iTransformation;
 
 /**
  * Description of ParameterTrait

@@ -24,17 +24,16 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\arche\disserv;
+namespace acdhOeaw\arche\lib\disserv\dissemination;
+
+use acdhOeaw\arche\lib\disserv\RepoResourceDb;
 
 /**
+ * Description of ServiceDb
  *
  * @author zozlak
  */
-interface RepoResourceInterface extends \acdhOeaw\acdhRepoLib\RepoResourceInterface {
+class ServiceDb extends RepoResourceDb implements ServiceInterface {
 
-    /**
-     * Returns list of dissemination services available for a resource.
-     * @return array
-     */
-    public function getDissServices(): array;
+    use ServiceTrait;
 }

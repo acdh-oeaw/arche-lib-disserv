@@ -24,16 +24,16 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\arche\disserv\dissemination;
+namespace acdhOeaw\arche\lib\disserv;
 
-use acdhOeaw\arche\disserv\RepoResource;
+use acdhOeaw\arche\lib\disserv\RepoResourceInterface;
 
 /**
- * Represents a dissemination service parameter.
+ * Description of RepoResource
  *
  * @author zozlak
  */
-class Parameter extends RepoResource {
+class RepoResource extends \acdhOeaw\arche\lib\RepoResource implements RepoResourceInterface {
 
-    use ParameterTrait;
+    use RepoResourceTrait;
 }

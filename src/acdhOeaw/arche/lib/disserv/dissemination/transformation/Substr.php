@@ -24,29 +24,31 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\arche\disserv\dissemination\transformation;
+namespace acdhOeaw\arche\lib\disserv\dissemination\transformation;
 
 /**
- * Base64 encodes given value
+ * Returns value's substring
  *
  * @author zozlak
  */
-class Base64Encode implements iTransformation {
-    
+class Substr implements iTransformation {
+
     /**
      * Returns transformation name
      */
     public function getName(): string {
-        return 'base64';
+        return 'substr';
     }
 
     /**
-     * Returns base64 encoded value
+     * Returns substring  of a given value by simply calling substr().
      * @param string $value value to be transformed
+     * @param int $start index of the first character to be returned
+     * @param int $length returned value length
      * @return string
      */
-    public function transform(string $value): string {
-        return base64_encode($value);
+    public function transform(string $value, int $start = 0, int $length = null): string {
+        return $length === null ? substr($value, $start) : substr($value, $start, $length);
     }
 
 }

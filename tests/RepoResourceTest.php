@@ -24,12 +24,14 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\arche\disserv;
+namespace acdhOeaw\arche\lib\disserv\tests;
 
-use acdhOeaw\acdhRepoLib\Repo;
-use acdhOeaw\acdhRepoLib\RepoDb;
-use acdhOeaw\arche\disserv\dissemination\Service;
-use acdhOeaw\arche\disserv\dissemination\ServiceDb;
+use acdhOeaw\arche\lib\Repo;
+use acdhOeaw\arche\lib\RepoDb;
+use acdhOeaw\arche\lib\disserv\RepoResource;
+use acdhOeaw\arche\lib\disserv\RepoResourceDb;
+use acdhOeaw\arche\lib\disserv\dissemination\Service;
+use acdhOeaw\arche\lib\disserv\dissemination\ServiceDb;
 
 /**
  * Description of RepoResourceTest
@@ -38,13 +40,9 @@ use acdhOeaw\arche\disserv\dissemination\ServiceDb;
  */
 class RepoResourceTest extends \PHPUnit\Framework\TestCase {
 
-    /**
-     *
-     * @var \acdhOeaw\acdhRepoLib\Repo
-     */
-    static private $repo;
-    static private $repoDb;
-    static private $config;
+    static private Repo $repo;
+    static private RepoDb $repoDb;
+    static private object $config;
 
     static public function setUpBeforeClass(): void {
         $cfgFile      = __DIR__ . '/config.yaml';

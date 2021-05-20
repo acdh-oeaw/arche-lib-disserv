@@ -24,17 +24,18 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\arche\disserv\dissemination;
+namespace acdhOeaw\arche\lib\disserv\dissemination;
 
+use BadMethodCallException;
 use Generator;
 use GuzzleHttp\Psr7\Request;
-use acdhOeaw\arche\disserv\RepoResourceInterface;
-use acdhOeaw\acdhRepoLib\QueryPart;
-use acdhOeaw\acdhRepoLib\Schema;
-use acdhOeaw\acdhRepoLib\SearchTerm;
-use acdhOeaw\acdhRepoLib\SearchConfig;
-use acdhOeaw\acdhRepoLib\exception\RepoLibException;
+use acdhOeaw\arche\lib\Schema;
+use acdhOeaw\arche\lib\SearchTerm;
+use acdhOeaw\arche\lib\SearchConfig;
+use acdhOeaw\arche\lib\disserv\RepoResourceInterface;
+use acdhOeaw\arche\lib\exception\RepoLibException;
 use zozlak\RdfConstants as RDF;
+use zozlak\queryPart\QueryPart;
 
 /**
  * Description of ServiceTrait
@@ -53,7 +54,7 @@ trait ServiceTrait {
      *     dissemination service
      *   - ServiceInterface::QUERY_DISSERV for querying dissemination services 
      *     for a given resource
-     * @param acdhOeaw\acdhRepoLib\Schema $schema schema object providing RDF property mappings
+     * @param Schema $schema schema object providing RDF property mappings
      * @return QueryPart
      */
     static public function getMatchQuery(int $id, int $mode, Schema $schema): QueryPart {

@@ -24,42 +24,39 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\arche\disserv\dissemination\transformation;
+namespace acdhOeaw\arche\lib\disserv\dissemination\transformation;
 
 /**
- * Assuming value is an URL, sets a given query parameter value.
- * If a parameter already exists in the query string, it's overwritten.
+ * Assuming value is an URL extracts given parts of the URL.
  *
  * @author zozlak
  */
-class SetParam implements iTransformation {
+class UriPart implements iTransformation {
 
     /**
      * Returns transformation name
      */
     public function getName(): string {
-        return 'set';
+        return 'part';
     }
 
     /**
-     * Sets a given query parameter value in the URL. If the parameter already
-     * exists, its value is overwritten.
+     * Extracts given URL parts.
      * @param string $value URL to be transformed
-     * @param string $paramName query parameter name
-     * @param string $paramValue query parameter value
+     * @param string $parts parts to be extracted. One of: scheme (e.g. "https", 
+     *   "ftp", etc.), host, port, user, pass, path, query, fragment 
+     *   (part of the URL following #)
      * @return string
      */
-    public function transform(string $value, string $paramName = '',
-                              string $paramValue = ''): string {
+    public function transform(string $value, string ...$parts): string {
         $value = parse_url($value);
 
-        if (!isset($value['query'])) {
-            $value['query'] = '';
+        $toUnset = ['scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment'];
+        $toUnset = array_intersect(array_diff($toUnset, $parts), array_keys($value));
+
+        foreach ($toUnset as $i) {
+            unset($value[$i]);
         }
-        $param             = [];
-        parse_str($value['query'], $param);
-        $param[$paramName] = $paramValue;
-        $value['query']    = http_build_query($param);
 
         $scheme   = isset($value['scheme']) ? $value['scheme'] . '://' : '';
         $host     = isset($value['host']) ? $value['host'] : '';

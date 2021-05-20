@@ -24,11 +24,11 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\arche\disserv\dissemination;
+namespace acdhOeaw\arche\lib\disserv\dissemination;
 
 use Generator;
 use GuzzleHttp\Psr7\Request;
-use acdhOeaw\arche\disserv\RepoResourceInterface;
+use acdhOeaw\arche\lib\disserv\RepoResourceInterface;
 
 /**
  *

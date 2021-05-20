@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\arche\disserv\dissemination\transformation;
+namespace acdhOeaw\arche\lib\disserv\dissemination\transformation;
 
 /**
  * Assuming value is an URL, adds a given query parameter value.

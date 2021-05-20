@@ -24,14 +24,29 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\arche\disserv;
+namespace acdhOeaw\arche\lib\disserv\dissemination\transformation;
 
 /**
- * Description of RepoResource
- *
+ * URL encodes given value
+ * 
  * @author zozlak
  */
-class RepoResource extends \acdhOeaw\acdhRepoLib\RepoResource implements RepoResourceInterface {
+class UrlEncode implements iTransformation {
 
-    use RepoResourceTrait;
+    /**
+     * Returns transformation name
+     */
+    public function getName(): string {
+        return 'url';
+    }
+
+    /**
+     * Returns URL encoded value
+     * @param string $value value to be transformed
+     * @return string
+     */
+    public function transform(string $value): string {
+        return rawurlencode($value);
+    }
+
 }

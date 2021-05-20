@@ -24,10 +24,10 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\arche\disserv;
+namespace acdhOeaw\arche\lib\disserv;
 
-use acdhOeaw\arche\disserv\dissemination\Service;
-use acdhOeaw\acdhRepoLib\SearchConfig;
+use acdhOeaw\arche\lib\disserv\dissemination\Service;
+use acdhOeaw\arche\lib\SearchConfig;
 
 /**
  * Description of RepoResourceTrait

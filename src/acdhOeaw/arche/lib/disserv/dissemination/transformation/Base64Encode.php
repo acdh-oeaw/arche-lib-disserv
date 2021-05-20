@@ -24,55 +24,29 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\arche\disserv\dissemination;
-
-use RuntimeException;
+namespace acdhOeaw\arche\lib\disserv\dissemination\transformation;
 
 /**
- * Container describing dissemination service return format.
- * Format consists of a format name (in most cases MIME type but there can be
- * exceptions) and weight (as weights used in the HTTP Accept header).
+ * Base64 encodes given value
  *
  * @author zozlak
  */
-class Format {
-
+class Base64Encode implements iTransformation {
+    
     /**
-     * Return format name (typically a MIME type)
-     * @var string
+     * Returns transformation name
      */
-    public $format;
-
-    /**
-     * Return format weight
-     * @var float
-     */
-    public $weight = 1;
-
-    /**
-     * Creates a return format description.
-     * @param string $value return type description in format "type" or
-     *   "type;q=weight", where weight is a number between 0 and 1
-     */
-    public function __construct(string $value) {
-        $value        = explode(';', $value);
-        $this->format = trim($value[0]);
-        if (count($value) > 1) {
-            $matches = [];
-            preg_match('/^ *q=(0[.][0-9]+) *$/', $value[1], $matches);
-            if (!isset($matches[1])) {
-                throw new RuntimeException('Bad weight specification');
-            }
-            $this->weight = (float) $matches[1];
-        }
+    public function getName(): string {
+        return 'base64';
     }
 
     /**
-     * Provides pretty-print serializaton
+     * Returns base64 encoded value
+     * @param string $value value to be transformed
      * @return string
      */
-    public function __toString() {
-        return $this->format . ';q=' . $this->weight;
+    public function transform(string $value): string {
+        return base64_encode($value);
     }
 
 }

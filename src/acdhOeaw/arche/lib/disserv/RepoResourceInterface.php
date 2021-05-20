@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2019 Austrian Centre for Digital Humanities.
+ * Copyright 2020 Austrian Centre for Digital Humanities.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,31 +24,17 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\arche\disserv\dissemination\transformation;
+namespace acdhOeaw\arche\lib\disserv;
 
 /**
- * Returns value's substring
  *
  * @author zozlak
  */
-class Substr implements iTransformation {
+interface RepoResourceInterface extends \acdhOeaw\arche\lib\RepoResourceInterface {
 
     /**
-     * Returns transformation name
+     * Returns list of dissemination services available for a resource.
+     * @return array<\acdhOeaw\arche\lib\dissserv\dissemination\Service>
      */
-    public function getName(): string {
-        return 'substr';
-    }
-
-    /**
-     * Returns substring  of a given value by simply calling substr().
-     * @param string $value value to be transformed
-     * @param int $start index of the first character to be returned
-     * @param int $length returned value length
-     * @return string
-     */
-    public function transform(string $value, int $start = 0, int $length = null): string {
-        return $length === null ? substr($value, $start) : substr($value, $start, $length);
-    }
-
+    public function getDissServices(): array;
 }

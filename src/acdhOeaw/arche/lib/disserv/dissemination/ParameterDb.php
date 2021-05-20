@@ -24,9 +24,9 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\arche\disserv\dissemination;
+namespace acdhOeaw\arche\lib\disserv\dissemination;
 
-use acdhOeaw\arche\disserv\RepoResourceDb;
+use acdhOeaw\arche\lib\disserv\RepoResourceDb;
 
 /**
  * Description of ParameterDb

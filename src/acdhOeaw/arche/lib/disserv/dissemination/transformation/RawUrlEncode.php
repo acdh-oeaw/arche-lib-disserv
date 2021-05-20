@@ -24,29 +24,30 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\arche\disserv\dissemination\transformation;
+namespace acdhOeaw\arche\lib\disserv\dissemination\transformation;
 
 /**
  * URL encodes given value
  * 
  * @author zozlak
  */
-class UrlEncode implements iTransformation {
+class RawUrlEncode implements iTransformation {
 
     /**
      * Returns transformation name
      */
     public function getName(): string {
-        return 'url';
+        return 'rawurlencode';
     }
 
     /**
-     * Returns URL encoded value
+     * Returns raw URL decoded value from the acdh identifier.
      * @param string $value value to be transformed
      * @return string
      */
     public function transform(string $value): string {
-        return rawurlencode($value);
+        $value = rawurlencode($value);
+        return $value;
     }
 
 }

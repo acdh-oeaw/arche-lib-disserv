@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2019 Austrian Centre for Digital Humanities.
+ * Copyright 2020 Austrian Centre for Digital Humanities.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,22 +24,16 @@
  * THE SOFTWARE.
  */
 
-namespace acdhOeaw\arche\disserv\dissemination\transformation;
+namespace acdhOeaw\arche\lib\disserv;
+
+use acdhOeaw\arche\lib\disserv\RepoResourceInterface;
 
 /**
- * An interface for dissemination services parameters transformation
+ * Description of RepoResourceDb
+ *
  * @author zozlak
  */
-interface iTransformation {
+class RepoResourceDb extends \acdhOeaw\arche\lib\RepoResourceDb implements RepoResourceInterface {
 
-    /**
-     * Returns transformation name
-     */
-    public function getName(): string;
-
-    /**
-     * Transforms a parameter.
-     * @param string $value parameter value to be transformed
-     */
-    public function transform(string $value): string;
+    use RepoResourceTrait;
 }
