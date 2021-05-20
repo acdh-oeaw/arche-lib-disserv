@@ -36,4 +36,8 @@ use acdhOeaw\arche\lib\disserv\RepoResourceDb;
 class ServiceDb extends RepoResourceDb implements ServiceInterface {
 
     use ServiceTrait;
+
+    private function getParameterClass(): string {
+        return ParameterDb::class;
+    }
 }

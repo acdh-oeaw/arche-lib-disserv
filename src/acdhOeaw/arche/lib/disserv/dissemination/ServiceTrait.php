@@ -328,6 +328,7 @@ trait ServiceTrait {
         if (is_array($this->param)) {
             return;
         }
+        $paramClass = $this->getParameterClass();
         $schema     = $this->getRepo()->getSchema();
         $parentProp = $schema->dissService->parent ?? $schema->parent;
         if ($this->loadParamFromMeta) {
@@ -339,7 +340,7 @@ trait ServiceTrait {
             foreach ($params as $i) {
                 /* @var $i \EasyRdf\Resource */
                 if ($i->isA($type)) {
-                    $param                          = new Parameter($i->getUri(), $this->getRepo());
+                    $param                          = new $paramClass($i->getUri(), $this->getRepo());
                     $param->setMetadata($i);
                     $this->param[$param->getName()] = $param;
                 }
@@ -354,7 +355,7 @@ trait ServiceTrait {
             ];
             $cfg               = new SearchConfig();
             $cfg->metadataMode = RepoResourceInterface::META_RESOURCE;
-            $cfg->class        = '\acdhOeaw\arche\disserv\dissemination\Parameter';
+            $cfg->class        = $paramClass;
             $params            = $this->getRepo()->getResourcesBySearchTerms($terms, $cfg);
             $this->param       = [];
             foreach ($params as $i) {
@@ -411,4 +412,6 @@ trait ServiceTrait {
         $this->loadParameters();
         return $this->param;
     }
+
+    private abstract function getParameterClass(): string;
 }

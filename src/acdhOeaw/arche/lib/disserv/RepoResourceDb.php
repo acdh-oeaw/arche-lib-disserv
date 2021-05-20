@@ -27,6 +27,7 @@
 namespace acdhOeaw\arche\lib\disserv;
 
 use acdhOeaw\arche\lib\disserv\RepoResourceInterface;
+use acdhOeaw\arche\lib\disserv\dissemination\ServiceDb;
 
 /**
  * Description of RepoResourceDb
@@ -36,4 +37,8 @@ use acdhOeaw\arche\lib\disserv\RepoResourceInterface;
 class RepoResourceDb extends \acdhOeaw\arche\lib\RepoResourceDb implements RepoResourceInterface {
 
     use RepoResourceTrait;
+
+    private function getServiceClass(): string {
+        return ServiceDb::class;
+    }
 }

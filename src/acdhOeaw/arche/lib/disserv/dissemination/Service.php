@@ -27,6 +27,7 @@
 namespace acdhOeaw\arche\lib\disserv\dissemination;
 
 use acdhOeaw\arche\lib\disserv\RepoResource;
+use acdhOeaw\arche\lib\disserv\dissemination\Parameter;
 
 /**
  * Represents a dissemination service.
@@ -36,4 +37,8 @@ use acdhOeaw\arche\lib\disserv\RepoResource;
 class Service extends RepoResource implements ServiceInterface {
 
     use ServiceTrait;
+
+    private function getParameterClass(): string {
+        return Parameter::class;
+    }
 }

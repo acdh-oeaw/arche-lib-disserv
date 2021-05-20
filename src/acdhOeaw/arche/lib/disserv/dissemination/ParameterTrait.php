@@ -29,6 +29,14 @@ namespace acdhOeaw\arche\lib\disserv\dissemination;
 use acdhOeaw\arche\lib\exception\RepoLibException;
 use acdhOeaw\arche\lib\disserv\RepoResourceInterface;
 use acdhOeaw\arche\lib\disserv\dissemination\transformation\iTransformation;
+use acdhOeaw\arche\lib\disserv\dissemination\transformation\AddParam;
+use acdhOeaw\arche\lib\disserv\dissemination\transformation\Base64Encode;
+use acdhOeaw\arche\lib\disserv\dissemination\transformation\UriPart;
+use acdhOeaw\arche\lib\disserv\dissemination\transformation\SetParam;
+use acdhOeaw\arche\lib\disserv\dissemination\transformation\Substr;
+use acdhOeaw\arche\lib\disserv\dissemination\transformation\UrlEncode;
+use acdhOeaw\arche\lib\disserv\dissemination\transformation\RawUrlEncode;
+use acdhOeaw\arche\lib\disserv\dissemination\transformation\RemoveProtocol;
 
 /**
  * Description of ParameterTrait
@@ -42,14 +50,14 @@ trait ParameterTrait {
      * @var array
      */
     static private $transformations = [
-        'add'            => 'acdhOeaw\arche\disserv\dissemination\transformation\AddParam',
-        'base64'         => 'acdhOeaw\arche\disserv\dissemination\transformation\Base64Encode',
-        'part'           => 'acdhOeaw\arche\disserv\dissemination\transformation\UriPart',
-        'set'            => 'acdhOeaw\arche\disserv\dissemination\transformation\SetParam',
-        'substr'         => 'acdhOeaw\arche\disserv\dissemination\transformation\Substr',
-        'url'            => 'acdhOeaw\arche\disserv\dissemination\transformation\UrlEncode',
-        'rawurlencode'   => 'acdhOeaw\arche\disserv\dissemination\transformation\RawUrlEncode',
-        'removeprotocol' => 'acdhOeaw\arche\disserv\dissemination\transformation\RemoveProtocol',
+        'add'            => AddParam::class,
+        'base64'         => Base64Encode::class,
+        'part'           => UriPart::class,
+        'set'            => SetParam::class,
+        'substr'         => Substr::class,
+        'url'            => UrlEncode::class,
+        'rawurlencode'   => RawUrlEncode::class,
+        'removeprotocol' => RemoveProtocol::class,
     ];
 
     /**
@@ -119,7 +127,8 @@ trait ParameterTrait {
      * @return string
      * @see transform()
      */
-    public function getValue(RepoResourceInterface $res, array $transformations = []): string {
+    public function getValue(RepoResourceInterface $res,
+                             array $transformations = []): string {
         $overwrite = filter_input(INPUT_GET, $this->getName());
         if ($overwrite !== null) {
             $valueProp = '';
@@ -137,5 +146,4 @@ trait ParameterTrait {
         }
         return self::value($res, $valueProp, $default, $transformations);
     }
-
 }
