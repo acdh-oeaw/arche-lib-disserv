@@ -1,4 +1,4 @@
-# ACDH-repo-ACDH
+# arche-lib-disserv
 
 [![Latest Stable Version](https://poser.pugx.org/acdh-oeaw/arche-lib-disserv/v/stable)](https://packagist.org/packages/acdh-oeaw/arche-lib-disserv)
 ![Build status](https://github.com/acdh-oeaw/arche-lib-disserv/workflows/phpunit/badge.svg?branch=master)
@@ -13,7 +13,7 @@ A library implementing dissemination services on top of the [arche-lib](https://
 
 ## Documentation
 
-API documentation: https://acdh-oeaw.github.io/arche-docs/arche-lib-disserv/
+API documentation: https://acdh-oeaw.github.io/arche-docs/devdocs/namespaces/acdhoeaw-arche-lib-disserv.html
 
 Broader description of the dissemination services idea: https://acdh-oeaw.github.io/arche-docs/aux/dissemination_services.html
 
