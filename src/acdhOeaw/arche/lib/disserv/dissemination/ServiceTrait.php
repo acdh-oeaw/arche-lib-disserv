@@ -380,16 +380,15 @@ trait ServiceTrait {
      */
     private function getResNmspId(RepoResourceInterface $res, string $namespace,
                                   bool $force): string {
-        if (!isset($res->getRepo()->getSchema()->namespaces->$namespace)) {
-            throw new RepoLibException("namespace '$namespace' is not defined in the config");
-        }
-        $nmsp  = $res->getRepo()->getSchema()->namespaces->$namespace;
+        $namespaces = $res->getRepo()->getSchema()->namespaces;
+print_r($namespaces);
+        $nmsp  = $namespaces->$namespace ?? throw new RepoLibException("namespace '$namespace' is not defined in the config");
         $ids   = $res->getIds();
         $match = null;
         foreach ($ids as $i) {
             if (str_starts_with($i, $nmsp)) {
                 $otherNmsp = false;
-                foreach ($this->getRepo()->getSchema()->namespaces as $j) {
+                foreach ($namespaces as $j) {
                     if ($nmsp !== $j && str_starts_with($i, $j)) {
                         $otherNmsp = true;
                         break;
