@@ -3,6 +3,7 @@
 /composer.lock
 /.phpdoc
 /.phpunit.result.cache
+/.phpunit.cache
 /build
 /config
 /log

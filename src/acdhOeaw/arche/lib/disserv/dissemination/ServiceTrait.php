@@ -381,7 +381,6 @@ trait ServiceTrait {
     private function getResNmspId(RepoResourceInterface $res, string $namespace,
                                   bool $force): string {
         $namespaces = $res->getRepo()->getSchema()->namespaces;
-print_r($namespaces);
         $nmsp  = $namespaces->$namespace ?? throw new RepoLibException("namespace '$namespace' is not defined in the config");
         $ids   = $res->getIds();
         $match = null;
