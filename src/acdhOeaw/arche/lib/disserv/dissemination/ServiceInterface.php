@@ -27,6 +27,7 @@
 namespace acdhOeaw\arche\lib\disserv\dissemination;
 
 use Generator;
+use RuntimeException;
 use GuzzleHttp\Psr7\Request;
 use acdhOeaw\arche\lib\disserv\RepoResourceInterface;
 
@@ -44,13 +45,13 @@ interface ServiceInterface {
      * 
      * Technically return formats are nothing more then strings. There is no
      * requirement forcing them to be mime types, etc. 
-     * @return array
+     * @return array<Format>
      */
     public function getFormats(): array;
 
     /**
      * Returns PSR-7 HTTP request disseminating a given resource.
-     * @param FedoraResource $res repository resource to be disseminated
+     * @param RepoResourceInterface $res repository resource to be disseminated
      * @return Request
      * @throws RuntimeException
      */
@@ -82,7 +83,7 @@ interface ServiceInterface {
     /**
      * Returns repository resources which can be disseminated by a given service
      * 
-     * @return Generator
+     * @return Generator<RepoResourceInterface>
      */
     public function getMatchingResources(): Generator;
 }

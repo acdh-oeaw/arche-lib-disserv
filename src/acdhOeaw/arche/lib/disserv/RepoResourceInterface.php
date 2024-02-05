@@ -25,6 +25,7 @@
  */
 
 namespace acdhOeaw\arche\lib\disserv;
+use acdhOeaw\arche\lib\disserv\dissemination\Service;
 
 /**
  *
@@ -34,7 +35,7 @@ interface RepoResourceInterface extends \acdhOeaw\arche\lib\RepoResourceInterfac
 
     /**
      * Returns list of dissemination services available for a resource.
-     * @return array<\acdhOeaw\arche\lib\dissserv\dissemination\Service>
+     * @return array<Service>
      */
     public function getDissServices(): array;
 }

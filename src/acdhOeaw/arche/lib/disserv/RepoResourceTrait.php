@@ -27,6 +27,7 @@
 namespace acdhOeaw\arche\lib\disserv;
 
 use acdhOeaw\arche\lib\disserv\dissemination\Service;
+use acdhOeaw\arche\lib\disserv\dissemination\Format;
 use acdhOeaw\arche\lib\SearchConfig;
 
 /**
@@ -38,7 +39,7 @@ trait RepoResourceTrait {
 
     /**
      * Returns list of dissemination services available for a resource.
-     * @return array
+     * @return array<string, Service>
      */
     public function getDissServices(): array {
         $schema = $this->getRepo()->getSchema();
@@ -55,10 +56,10 @@ trait RepoResourceTrait {
         // gather all services
         $services = $formats  = $mime     = [];
         foreach ($tmp as $i) {
-            /* @var $i \acdhOeaw\arche\disserv\dissemination\Service */
+            /* @var $i Service */
             $i->loadParametersFromMetadata();
             foreach ($i->getFormats() as $f) {
-                /* @var $f \acdhOeaw\arche\disserv\dissemination\Format */
+                /* @var $f Format */
                 $services[] = $i;
                 $formats[]  = $f->weight;
                 $mime[]     = $f->format;

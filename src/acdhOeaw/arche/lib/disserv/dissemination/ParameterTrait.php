@@ -26,8 +26,12 @@
 
 namespace acdhOeaw\arche\lib\disserv\dissemination;
 
-use EasyRdf\Resource;
+use rdfInterface\DatasetNodeInterface;
+use rdfInterface\NamedNodeInterface;
+use rdfInterface\TermInterface;
+use termTemplates\PredicateTemplate as PT;
 use acdhOeaw\arche\lib\exception\RepoLibException;
+use acdhOeaw\arche\lib\Schema;
 use acdhOeaw\arche\lib\disserv\RepoResourceInterface;
 use acdhOeaw\arche\lib\disserv\dissemination\transformation\iTransformation;
 use acdhOeaw\arche\lib\disserv\dissemination\transformation\AddParam;
@@ -48,9 +52,9 @@ trait ParameterTrait {
 
     /**
      * Stores list of registered transformations
-     * @var array
+     * @var array<string, string>
      */
-    static private $transformations = [
+    static private array $transformations = [
         'add'            => AddParam::class,
         'base64'         => Base64Encode::class,
         'part'           => UriPart::class,
@@ -72,7 +76,7 @@ trait ParameterTrait {
     /**
      * Applies given transformations to a value
      * @param string $value value
-     * @param string $transformations transformations to be applied to the value
+     * @param array<string> $transformations transformations to be applied to the value
      * @return string
      */
     static public function applyTransformations(string $value,
@@ -99,14 +103,9 @@ trait ParameterTrait {
         return $value;
     }
 
-    private ?string $valueProp;
-    private string $default = '';
-
-    /**
-     * 
-     * @var array<string>
-     */
-    private array $namespaces = [];
+    private TermInterface $valueProp;
+    private string $default    = '';
+    private Schema $namespaces;
 
     /**
      * Returns parameter name
@@ -114,7 +113,7 @@ trait ParameterTrait {
      */
     public function getName(): string {
         $meta = $this->getGraph();
-        return (string) $meta->getLiteral($this->getRepo()->getSchema()->label);
+        return (string) $meta->getObject(new PT($this->getRepo()->getSchema()->label));
     }
 
     /**
@@ -137,26 +136,27 @@ trait ParameterTrait {
         return self::applyTransformations($value, $transformations);
     }
 
-    private function findValue(Resource $meta, ?string $prefix, bool $force): string {
+    private function findValue(DatasetNodeInterface $meta, ?string $prefix,
+                               bool $force): string {
         $this->init();
-        if ($this->valueProp === null) {
+        if (!isset($this->valueProp)) {
             return $this->default;
         }
 
-        $values = $meta->all($this->valueProp);
-        if (count($values) === 0) {
+        $values = $meta->listObjects(new PT($this->valueProp));
+        if (!$values->valid()) {
             return $this->default;
         }
 
         if (empty($prefix)) {
-            return (string) $values[0];
+            return (string) $values->current();
         }
         $prefix = $this->namespaces[$prefix] ?? throw new RepoLibException("namespace '$prefix' is not defined in the config");
 
         $allValues = [];
         foreach ($values as $i) {
-            if ($i instanceof Resource) {
-                $i         = new self($i->getUri(), $this->getRepo());
+            if ($i instanceof NamedNodeInterface) {
+                $i         = new self((string) $i, $this->getRepo());
                 $allValues = array_merge($allValues, $i->getIds());
             } else {
                 $allValues[] = (string) $i;
@@ -181,17 +181,20 @@ trait ParameterTrait {
                 }
             }
         }
-        return $match ?? ($force ? $this->default : $values[0]);
+        return $match ?? ($force ? $this->default : reset($allValues));
     }
 
     private function init(): void {
         if (!isset($this->valueProp)) {
-            $meta             = $this->getGraph();
-            $tmp              = $meta->all($this->getRepo()->getSchema()->dissService->parameterDefaultValue);
-            $this->default    = count($tmp) > 0 ? (string) $tmp[0] : '';
-            $tmp              = $meta->all($this->getRepo()->getSchema()->dissService->parameterRdfProperty);
-            $this->valueProp  = count($tmp) > 0 ? (string) $tmp[0] : null;
-            $this->namespaces = (array) $this->getRepo()->getSchema()->namespaces ?? array();
+            $schema        = $this->getRepo()->getSchema();
+            $meta          = $this->getGraph();
+            $tmp           = $meta->getObject(new PT($schema->dissService->parameterDefaultValue));
+            $this->default = (string) ($tmp ?? '');
+            $tmp           = $meta->getObject(new PT($schema->dissService->parameterRdfProperty));
+            if ($tmp !== null) {
+                $this->valueProp = $tmp;
+            }
+            $this->namespaces = $schema->namespaces ?? new Schema([]);
         }
     }
 }

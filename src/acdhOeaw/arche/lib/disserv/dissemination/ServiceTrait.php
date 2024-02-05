@@ -28,7 +28,11 @@ namespace acdhOeaw\arche\lib\disserv\dissemination;
 
 use BadMethodCallException;
 use Generator;
+use RuntimeException;
 use GuzzleHttp\Psr7\Request;
+use quickRdf\DataFactory as DF;
+use quickRdf\DatasetNode;
+use termTemplates\PredicateTemplate as PT;
 use acdhOeaw\arche\lib\Schema;
 use acdhOeaw\arche\lib\SearchTerm;
 use acdhOeaw\arche\lib\SearchConfig;
@@ -174,27 +178,22 @@ trait ServiceTrait {
 
     /**
      * Parameters list
-     * @var array
+     * @var array<mixed>
      */
-    private $param;
-
-    /**
-     *
-     * @var bool
-     */
-    private $loadParamFromMeta = false;
+    private array $param;
+    private bool $loadParamFromMeta = false;
 
     /**
      * Returns all return formats provided by the dissemination service.
      * 
      * Technically return formats are nothing more then strings. There is no
      * requirement forcing them to be mime types, etc. 
-     * @return array
+     * @return array<Format>
      */
     public function getFormats(): array {
         $meta    = $this->getMetadata();
         $formats = [];
-        foreach ($meta->all($this->getRepo()->getSchema()->dissService->returnFormat) as $i) {
+        foreach ($meta->listObjects(new PT($this->getRepo()->getSchema()->dissService->returnFormat)) as $i) {
             $formats[] = new Format((string) $i);
         }
         return $formats;
@@ -235,7 +234,7 @@ trait ServiceTrait {
      */
     public function getLocation(): string {
         $meta = $this->getMetadata();
-        return $meta->getLiteral($this->getRepo()->getSchema()->dissService->location);
+        return (string) $meta->getObject(new PT($this->getRepo()->getSchema()->dissService->location));
     }
 
     /**
@@ -246,8 +245,8 @@ trait ServiceTrait {
      */
     public function getRevProxy(): bool {
         $meta  = $this->getMetadata();
-        $value = $meta->getLiteral($this->getRepo()->getSchema()->dissService->revProxy)->getValue();
-        return $value ?? false;
+        $value = $meta->getObject($this->getRepo()->getSchema()->dissService->revProxy)?->getValue() ?? false;
+        return (bool) $value;
     }
 
     /**
@@ -281,7 +280,7 @@ trait ServiceTrait {
 
     /**
      * Returns list of all parameters of a given dissemination service
-     * @return array
+     * @return array<string>
      */
     private function getUrlParameters(): array {
         $uri   = $this->getLocation();
@@ -292,9 +291,9 @@ trait ServiceTrait {
 
     /**
      * Evaluates parameter values for a given resource.
-     * @param array $param list of parameters
+     * @param array<string> $param list of parameters
      * @param RepoResourceInterface $res repository resource to be disseminated
-     * @return array associative array with parameter values
+     * @return array<string, mixed> associative array with parameter values
      * @throws RuntimeException
      */
     private function getParameterValues(array $param, RepoResourceInterface $res): array {
@@ -332,33 +331,30 @@ trait ServiceTrait {
     }
 
     private function loadParameters(): void {
-        if (is_array($this->param)) {
+        if (isset($this->param)) {
             return;
         }
         $paramClass = $this->getParameterClass();
         $schema     = $this->getRepo()->getSchema();
         $parentProp = $schema->dissService->parent ?? $schema->parent;
+        $type       = $schema->dissService->parameterClass;
         if ($this->loadParamFromMeta) {
-            $type        = $schema->dissService->parameterClass;
-            $parentProp  = $parentProp;
-            $graph       = $this->getGraph()->getGraph();
-            $params      = $graph->resourcesMatching($parentProp, $graph->resource($this->getUri()));
+            $typeTmpl    = new PT(DF::namedNode(RDF::RDF_TYPE), $type);
+            $graph       = $this->getGraph()->getDataset();
+            $params      = $graph->listSubjects(new PT($parentProp, $this->getUri()));
             $this->param = [];
             foreach ($params as $i) {
-                /* @var $i \EasyRdf\Resource */
-                if ($i->isA($type)) {
-                    $param                          = new $paramClass($i->getUri(), $this->getRepo());
-                    $param->setMetadata($i);
+                if ($graph->any($typeTmpl->withSubject($i))) {
+                    $param                          = new $paramClass((string) $i, $this->getRepo());
+                    $ds                             = new DatasetNode($i);
+                    $param->setMetadata($ds->withDataset($graph));
                     $this->param[$param->getName()] = $param;
                 }
             }
         } else {
-            $typeProp          = RDF::RDF_TYPE;
-            $type              = $schema->dissService->parameterClass;
-            $parentProp        = $parentProp;
             $terms             = [
-                new SearchTerm($typeProp, $type),
-                new SearchTerm($parentProp, $this->getUri()),
+                new SearchTerm(RDF::RDF_TYPE, (string) $type),
+                new SearchTerm((string) $parentProp, (string) $this->getUri()),
             ];
             $cfg               = new SearchConfig();
             $cfg->metadataMode = RepoResourceInterface::META_RESOURCE;
@@ -418,7 +414,7 @@ trait ServiceTrait {
 
     /**
      * Get the parameters 
-     * @return array
+     * @return array<mixed>
      */
     public function getParameters(): array {
         $this->loadParameters();

@@ -42,8 +42,8 @@ interface ParameterInterface extends RepoResourceInterface {
 
     /**
      * Return parameter value for a given repository resource
-     * @param FedoraResource $res repository resource to get the value for
-     * @param string $transformations transformations to be applied to the value
+     * @param RepoResourceInterface $res repository resource to get the value for
+     * @param array<string> $transformations transformations to be applied to the value
      * @return string
      * @see transform()
      */

@@ -39,15 +39,13 @@ class Format {
 
     /**
      * Return format name (typically a MIME type)
-     * @var string
      */
-    public $format;
+    public string $format;
 
     /**
      * Return format weight
-     * @var float
      */
-    public $weight = 1;
+    public float $weight = 1;
 
     /**
      * Creates a return format description.
@@ -71,8 +69,7 @@ class Format {
      * Provides pretty-print serializaton
      * @return string
      */
-    public function __toString() {
+    public function __toString(): string {
         return $this->format . ';q=' . $this->weight;
     }
-
 }

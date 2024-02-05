@@ -8,6 +8,9 @@ rest:
     metadataParentProperty: X-PARENT-PROPERTY
     metadataWriteMode: X-METADATA-WRITE-MODE
     transactionId: X-TRANSACTION-ID
+    withReferences: X-WITH-REFERENCES
+    resourceProperties: X-RESOURCE-PROPERTIES
+    relativesProperties: X-RELATIVES-PROPERTIES
 dbConn:
   guest: 'pgsql: host=localhost port=5432 user=www-data'
 schema:
@@ -68,6 +71,15 @@ schema:
     sharedObject: https://vocabs.acdh.oeaw.ac.at/schema#AgentOrPlaceOrPublication
     collection: https://vocabs.acdh.oeaw.ac.at/schema#Collection
     topCollection: https://vocabs.acdh.oeaw.ac.at/schema#TopCollection
+    project: https://vocabs.acdh.oeaw.ac.at/schema#Project
+    resource: https://vocabs.acdh.oeaw.ac.at/schema#Resource
+    metadata: https://vocabs.acdh.oeaw.ac.at/schema#Metadata
+    image: https://vocabs.acdh.oeaw.ac.at/schema#Image
+    publication: https://vocabs.acdh.oeaw.ac.at/schema#Publication
+    place: https://vocabs.acdh.oeaw.ac.at/schema#Place
+    organisation: https://vocabs.acdh.oeaw.ac.at/schema#Organisation
+    person: https://vocabs.acdh.oeaw.ac.at/schema#Person
+    agent: https://vocabs.acdh.oeaw.ac.at/schema#Agent
   ingest:
     location: https://vocabs.acdh.oeaw.ac.at/schema#hasLocationPath
     containerToUriPrefix: acdhContainer://
@@ -78,6 +90,10 @@ schema:
     recommended: https://vocabs.acdh.oeaw.ac.at/schema#recommendedClass
     langTag: https://vocabs.acdh.oeaw.ac.at/schema#langTag
     vocabs: https://vocabs.acdh.oeaw.ac.at/schema#vocabs
+  searchOrder: search://order
+  searchOrderValue: search://orderValue
+  biblatex: https://vocabs.acdh.oeaw.ac.at/schema#hasCustomCitation
+  titleImage: https://vocabs.acdh.oeaw.ac.at/schema#isTitleImageOf
 auth:
   httpHeader:
     Eppn: admin
@@ -96,4 +112,9 @@ resolver:
   repositories:
     self:
       baseUrl: http://127.0.0.1/api/
+openrefine:
+  baseUrl: http://127.0.0.1/openrefine/
+  viewUrl: http://127.0.0.1/browser/oeaw_detail/{{id}}
+dbConnStr:
+  guest: 'pgsql: host=localhost port=5432 user=www-data'
 ...
