@@ -24,6 +24,7 @@ jobs:
     - name: config.yaml
       run: |
         vendor/zozlak/yaml-merge/bin/yaml-edit.php --src config/yaml/schema.yaml --src config/yaml/local.yaml.sample --src '{"dbConnStr":{"guest":"pgsql: host=localhost port=5432 user=www-data"}}' tests/config.yaml
+        cat tests/config.yaml
     - name: wait
       run: |
         while [ "`grep '# INIT SCRIPTS ENDED' log/initScripts.log | wc -l`" != "1" ]; do
