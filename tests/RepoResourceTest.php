@@ -56,24 +56,30 @@ class RepoResourceTest extends \PHPUnit\Framework\TestCase {
     }
 
     public function testGetDissServ(): void {
-        $res  = self::$repo->getResourceById('https://id.acdh.oeaw.ac.at/10000');
-        $res  = new RepoResource($res->getUri(), self::$repo);
-        $ds1  = $res->getDissServices();
-        $urls = [];
+        $res   = self::$repo->getResourceById('https://id.acdh.oeaw.ac.at/10000');
+        $res   = new RepoResource($res->getUri(), self::$repo);
+        $ds1   = $res->getDissServices();
+        $urls1 = [];
         foreach ($ds1 as $i) {
-            /* @var $i \acdhOeaw\acdhRepoDisserv\dissemination\Service */
-            $urls[] = $i->getRequest($res)->getUri();
+            $url = $i->getRequest($res)->getUri();
+            foreach ($i->getFormats() as $j) {
+                $urls1[(string) $j] = $url;
+            }
         }
 
 
-        $res = self::$repo->getResourceById('https://id.acdh.oeaw.ac.at/10000');
-        $res = new RepoResourceDb($res->getUri(), self::$repoDb);
-        $ds2 = $res->getDissServices();
-        $n   = 0;
+        $res   = self::$repo->getResourceById('https://id.acdh.oeaw.ac.at/10000');
+        $res   = new RepoResourceDb($res->getUri(), self::$repoDb);
+        $ds2   = $res->getDissServices();
+        $urls2 = [];
         foreach ($ds2 as $i) {
-            $this->assertEquals($urls[$n], $i->getRequest($res)->getUri());
-            $n++;
+            $url = $i->getRequest($res)->getUri();
+            foreach ($i->getFormats() as $j) {
+                $urls2[(string) $j] = $url;
+            }
         }
+
+        $this->assertEquals($urls1, $urls2);
     }
 
     public function testGetResources(): void {
