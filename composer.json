@@ -13,14 +13,8 @@
     ],
     "require": {
         "php": ">=8 <8.3",
-        "acdh-oeaw/arche-lib": "dev-rdfInterface",
-        "zozlak/rdf-constants": "^1",
-        "sweetrdf/rdf-interface": "dev-master",
-        "sweetrdf/quick-rdf": "dev-master",
-        "sweetrdf/simple-rdf": "dev-master",
-        "sweetrdf/quick-rdf-io": "dev-master",
-        "sweetrdf/term-templates": "dev-dev",
-        "sweetrdf/rdf-helpers": "dev-dev"
+        "acdh-oeaw/arche-lib": "^6",
+        "zozlak/rdf-constants": "^1"
     },
     "autoload": {
         "psr-4": {
