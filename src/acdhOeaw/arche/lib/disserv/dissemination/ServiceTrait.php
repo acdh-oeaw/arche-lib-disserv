@@ -245,7 +245,7 @@ trait ServiceTrait {
      */
     public function getRevProxy(): bool {
         $meta  = $this->getMetadata();
-        $value = $meta->getObject($this->getRepo()->getSchema()->dissService->revProxy)?->getValue() ?? false;
+        $value = $meta->getObject(new PT($this->getRepo()->getSchema()->dissService->revProxy))?->getValue() ?? false;
         return (bool) $value;
     }
 
@@ -381,9 +381,9 @@ trait ServiceTrait {
     private function getResNmspId(RepoResourceInterface $res, string $namespace,
                                   bool $force): string {
         $namespaces = $res->getRepo()->getSchema()->namespaces;
-        $nmsp  = $namespaces->$namespace ?? throw new RepoLibException("namespace '$namespace' is not defined in the config");
-        $ids   = $res->getIds();
-        $match = null;
+        $nmsp       = $namespaces->$namespace ?? throw new RepoLibException("namespace '$namespace' is not defined in the config");
+        $ids        = $res->getIds();
+        $match      = null;
         foreach ($ids as $i) {
             if (str_starts_with($i, $nmsp)) {
                 $otherNmsp = false;
