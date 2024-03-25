@@ -143,7 +143,7 @@ trait ParameterTrait {
             return $this->default;
         }
 
-        $values = $meta->listObjects(new PT($this->valueProp));
+        $values = $meta->listObjects(new PT((string) $this->valueProp));
         if (!$values->valid()) {
             return $this->default;
         }
