@@ -245,8 +245,8 @@ trait ServiceTrait {
      */
     public function getRevProxy(): bool {
         $meta  = $this->getMetadata();
-        $value = $meta->getObject(new PT($this->getRepo()->getSchema()->dissService->revProxy))?->getValue() ?? false;
-        return (bool) $value;
+        $value = $meta->getObject(new PT($this->getRepo()->getSchema()->dissService->revProxy))?->getValue() ?? 'false';
+        return $value === 'true';
     }
 
     /**
