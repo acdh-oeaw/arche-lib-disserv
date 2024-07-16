@@ -29,6 +29,7 @@ namespace acdhOeaw\arche\lib\disserv\dissemination;
 use rdfInterface\DatasetNodeInterface;
 use rdfInterface\NamedNodeInterface;
 use rdfInterface\TermInterface;
+use quickRdf\DataFactory as DF;
 use termTemplates\PredicateTemplate as PT;
 use acdhOeaw\arche\lib\exception\RepoLibException;
 use acdhOeaw\arche\lib\Schema;
@@ -103,8 +104,8 @@ trait ParameterTrait {
         return $value;
     }
 
-    private TermInterface $valueProp;
-    private string $default    = '';
+    private NamedNodeInterface $valueProp;
+    private string $default = '';
     private Schema $namespaces;
 
     /**
@@ -143,7 +144,7 @@ trait ParameterTrait {
             return $this->default;
         }
 
-        $values = $meta->listObjects(new PT((string) $this->valueProp));
+        $values = $meta->listObjects(new PT($this->valueProp));
         if (!$values->valid()) {
             return $this->default;
         }
@@ -192,7 +193,7 @@ trait ParameterTrait {
             $this->default = (string) ($tmp ?? '');
             $tmp           = $meta->getObject(new PT($schema->dissService->parameterRdfProperty));
             if ($tmp !== null) {
-                $this->valueProp = $tmp;
+                $this->valueProp = DF::namedNode((string) $tmp);
             }
             $this->namespaces = $schema->namespaces ?? new Schema([]);
         }
