@@ -44,10 +44,10 @@ class Substr implements iTransformation {
      * Returns substring  of a given value by simply calling substr().
      * @param string $value value to be transformed
      * @param int $start index of the first character to be returned
-     * @param int $length returned value length
+     * @param int|null $length returned value length
      * @return string
      */
-    public function transform(string $value, int $start = 0, int $length = null): string {
+    public function transform(string $value, int $start = 0, ?int $length = null): string {
         return $length === null ? substr($value, $start) : substr($value, $start, $length);
     }
 
