@@ -270,7 +270,7 @@ trait ServiceTrait {
 
         $config               = new SearchConfig();
         $config->metadataMode = RepoResourceInterface::META_RESOURCE;
-        $config->class        = get_parent_class();
+        $config->class        = get_parent_class($this);
 
         $tmp = $this->getRepo()->getResourcesBySqlQuery($query->query, $query->param, $config);
         foreach ($tmp as $i) {
