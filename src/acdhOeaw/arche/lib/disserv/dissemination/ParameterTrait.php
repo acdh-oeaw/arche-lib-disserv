@@ -134,7 +134,7 @@ trait ParameterTrait {
     public function getValue(RepoResourceInterface $res,
                              array $transformations = [],
                              ?string $prefix = null, bool $forcePrefix = false): string {
-        $value = filter_input(INPUT_GET, $this->getName());
+        $value = $_GET[$this->getName()] ?? null;
         if ($value === null) {
             $value = $this->findValue($res->getGraph(), $prefix, $forcePrefix);
         }
