@@ -308,7 +308,7 @@ trait ServiceTrait {
      */
     private function getParameterValues(array $param, RepoResourceInterface $res): array {
         $this->loadParameters();
-        $this->queryParam = filter_input_array(INPUT_GET);
+        $this->queryParam = $_GET;
 
         $values = [];
         foreach ($param as $i) {
