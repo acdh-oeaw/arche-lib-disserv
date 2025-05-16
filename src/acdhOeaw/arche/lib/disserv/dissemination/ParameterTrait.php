@@ -91,7 +91,7 @@ trait ParameterTrait {
             preg_match('|^([^(]+)([(].*[)])?$|', $i, $matches);
             $name    = $matches[1];
             if (!isset(self::$transformations[$name])) {
-                throw new RepoLibException('Unknown transformation');
+                throw new RepoLibException("Unknown transformation $name");
             }
 
             $param = [$value];

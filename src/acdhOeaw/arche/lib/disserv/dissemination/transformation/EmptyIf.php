@@ -47,7 +47,7 @@ class EmptyIf implements iTransformation {
      */
     public function transform(string $value, string $varName = '',
                               string $varValue = ''): string {
-        if (empty($value)) {
+        if (empty($varValue)) {
             return !empty($_GET[$varName]) ? '' : $value;
         } else {
             return ($_GET[$varName] ?? null) === $varValue ? '' : $value;
