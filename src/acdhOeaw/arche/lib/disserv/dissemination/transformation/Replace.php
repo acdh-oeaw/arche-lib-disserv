@@ -49,7 +49,7 @@ class Replace implements iTransformation {
      *   $sep as a separator
      * @return string
      */
-    public function transform(string $value, string $from, string $to,
+    public function transform(string $value, string $from = '', string $to = '',
                               string $sep = ''): string {
         if (!empty($sep)) {
             $from = explode($sep, $from);

@@ -45,7 +45,7 @@ class EmptyIf implements iTransformation {
      *   or just is not empty if the $value is empty
      * @return string
      */
-    public function transform(string $value, string $varName,
+    public function transform(string $value, string $varName = '',
                               string $varValue = ''): string {
         if (empty($value)) {
             return !empty(filter_input(INPUT_GET, $varName)) ? '' : $value;
