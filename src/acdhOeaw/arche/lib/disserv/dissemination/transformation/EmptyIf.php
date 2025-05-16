@@ -27,7 +27,7 @@
 namespace acdhOeaw\arche\lib\disserv\dissemination\transformation;
 
 /**
- * Returns empty value if query parameter of a given name exists and is not empty
+ * Conditionally removes parameter value 
  *
  * @author zozlak
  */
@@ -41,12 +41,16 @@ class EmptyIf implements iTransformation {
     }
 
     /**
-     * Returns empty value if query parameter of a given name exists and is not empty
-     * @param string $value value to be transformed
-     * @param string $varname query parameter
+     * Returns empty value if query parameter of a given name has a given value
+     *   or just is not empty if the $value is empty
      * @return string
      */
-    public function transform(string $value, string $varname): string {
-        return empty(filter_input(INPUT_GET, $varname)) ? $value : '';
+    public function transform(string $value, string $varName,
+                              string $varValue = ''): string {
+        if (empty($value)) {
+            return !empty(filter_input(INPUT_GET, $varName)) ? '' : $value;
+        } else {
+            return filter_input(INPUT_GET, $varName) === $varValue ? '' : $value;
+        }
     }
 }
