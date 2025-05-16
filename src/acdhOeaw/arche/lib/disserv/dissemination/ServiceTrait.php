@@ -219,6 +219,7 @@ trait ServiceTrait {
             $uri = str_replace($k, $v, $uri);
         }
         
+        unset($this->queryParam[ServiceInterface::QUERY_FORMAT_PARAM]);
         if (count($this->queryParam) > 0) {
             $uri .= str_contains($uri, '?') ? '&' : '?';
             $uri .= http_build_query($this->queryParam);
