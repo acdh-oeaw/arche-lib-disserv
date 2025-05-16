@@ -67,7 +67,7 @@ trait ParameterTrait {
         'url'            => UrlEncode::class,
         'rawurlencode'   => RawUrlEncode::class,
         'removeprotocol' => RemoveProtocol::class,
-        'replace'        => Replace::clas,
+        'replace'        => Replace::class,
     ];
 
     /**
