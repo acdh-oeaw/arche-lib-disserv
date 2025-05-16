@@ -37,12 +37,14 @@ use acdhOeaw\arche\lib\disserv\RepoResourceInterface;
 use acdhOeaw\arche\lib\disserv\dissemination\transformation\iTransformation;
 use acdhOeaw\arche\lib\disserv\dissemination\transformation\AddParam;
 use acdhOeaw\arche\lib\disserv\dissemination\transformation\Base64Encode;
+use acdhOeaw\arche\lib\disserv\dissemination\transformation\EmptyIf;
 use acdhOeaw\arche\lib\disserv\dissemination\transformation\UriPart;
 use acdhOeaw\arche\lib\disserv\dissemination\transformation\SetParam;
 use acdhOeaw\arche\lib\disserv\dissemination\transformation\Substr;
 use acdhOeaw\arche\lib\disserv\dissemination\transformation\UrlEncode;
 use acdhOeaw\arche\lib\disserv\dissemination\transformation\RawUrlEncode;
 use acdhOeaw\arche\lib\disserv\dissemination\transformation\RemoveProtocol;
+use acdhOeaw\arche\lib\disserv\dissemination\transformation\Replace;
 
 /**
  * Description of ParameterTrait
@@ -60,10 +62,12 @@ trait ParameterTrait {
         'base64'         => Base64Encode::class,
         'part'           => UriPart::class,
         'set'            => SetParam::class,
+        'emptyIf'        => EmptyIf::class,
         'substr'         => Substr::class,
         'url'            => UrlEncode::class,
         'rawurlencode'   => RawUrlEncode::class,
         'removeprotocol' => RemoveProtocol::class,
+        'replace'        => Replace::clas,
     ];
 
     /**

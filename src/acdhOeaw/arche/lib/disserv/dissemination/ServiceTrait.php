@@ -175,12 +175,17 @@ trait ServiceTrait {
         );
         return new QueryPart($query, $param);
     }
-
     /**
      * Parameters list
      * @var array<mixed>
      */
+
+    /**
+     * Query parameters list
+     * @var array<string, mixed>
+     */
     private array $param;
+    private array $queryParam;
     private bool $loadParamFromMeta = false;
 
     /**
@@ -212,6 +217,11 @@ trait ServiceTrait {
         $values = $this->getParameterValues($param, $res);
         foreach ($values as $k => $v) {
             $uri = str_replace($k, $v, $uri);
+        }
+        
+        if (count($this->queryParam) > 0) {
+            $uri .= str_contains($uri, '?') ? '&' : '?';
+            $uri .= http_build_query($this->queryParam);
         }
 
         return new Request('get', $uri);
@@ -298,6 +308,7 @@ trait ServiceTrait {
      */
     private function getParameterValues(array $param, RepoResourceInterface $res): array {
         $this->loadParameters();
+        $this->queryParam = filter_input_array(INPUT_GET);
 
         $values = [];
         foreach ($param as $i) {
@@ -325,6 +336,8 @@ trait ServiceTrait {
                 throw new RepoLibException('Unknown parameter ' . $name . ' (' . $this->getUri() . ')');
             }
             $values[$i] = $value;
+
+            unset($this->queryParam[$name]);
         }
 
         return $values;
