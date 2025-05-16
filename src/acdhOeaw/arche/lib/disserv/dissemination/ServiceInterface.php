@@ -39,7 +39,7 @@ interface ServiceInterface {
 
     const QUERY_RES          = 1;
     const QUERY_DISSERV      = 2;
-    const QUERY_FORMAT_PARAM = 'format';
+    const FORMAT_QUERY_PARAM = 'format';
 
     /**
      * Returns all return formats provided by the dissemination service.
