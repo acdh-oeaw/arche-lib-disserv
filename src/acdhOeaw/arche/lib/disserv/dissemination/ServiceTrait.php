@@ -185,6 +185,9 @@ trait ServiceTrait {
      * @var array<string, mixed>
      */
     private array $param;
+    /**
+     * @var array<string, mixed>
+     */
     private array $queryParam;
     private bool $loadParamFromMeta = false;
 
@@ -376,6 +379,7 @@ trait ServiceTrait {
             $params            = $this->getRepo()->getResourcesBySearchTerms($terms, $cfg);
             $this->param       = [];
             foreach ($params as $i) {
+                /** @var ParameterInterface $i */
                 $this->param[$i->getName()] = $i;
             }
         }

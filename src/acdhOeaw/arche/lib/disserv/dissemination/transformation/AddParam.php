@@ -77,7 +77,7 @@ class AddParam implements iTransformation {
         $pass     = isset($value['pass']) ? ':' . $value['pass'] : '';
         $pass     = ($user || $pass) ? "$pass@" : '';
         $path     = isset($value['path']) ? $value['path'] : '';
-        $query    = isset($value['query']) ? '?' . $value['query'] : '';
+        $query    = empty($value['query']) ? '' : '?' . $value['query'];
         $fragment = isset($value['fragment']) ? '#' . $value['fragment'] : '';
         return $scheme . $user . $pass . $host . $port . $path . $query . $fragment;
     }

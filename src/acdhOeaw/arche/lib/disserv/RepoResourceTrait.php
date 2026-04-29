@@ -56,7 +56,7 @@ trait RepoResourceTrait {
         // gather all services
         $services = $formats  = $mime     = [];
         foreach ($tmp as $i) {
-            /* @var $i Service */
+            /** @var Service $i */
             $i->loadParametersFromMetadata();
             foreach ($i->getFormats() as $f) {
                 /* @var $f Format */

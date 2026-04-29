@@ -42,6 +42,7 @@ class RepoResourceTest extends \PHPUnit\Framework\TestCase {
 
     static private Repo $repo;
     static private RepoDb $repoDb;
+    /** @phpstan-ignore property.onlyWritten */
     static private object $config;
 
     static public function setUpBeforeClass(): void {
