@@ -228,7 +228,7 @@ trait ServiceTrait {
             $uri .= http_build_query($this->queryParam);
         }
 
-        return new Request('get', $uri);
+        return new Request('GET', $uri);
     }
 
     /**
